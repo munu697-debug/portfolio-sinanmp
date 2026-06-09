@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Sinan MP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b0813',
+            purpleGlow: '#6d28d9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- RTDB helpers -->
+  <script type="module">
+    import { rtdb } from './js/js/firebase-config.js';
+    import { ref, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+    window.__RTDB_DASHBOARD_API__ = {
+      async getItems(path, fallback) {
+        const snap = await get(ref(rtdb, path));
+        if (!snap.exists()) return fallback;
+
+        const data = snap.val();
+        return Array.isArray(data) ? data : fallback;
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .glass-card {
+      background: rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+  <nav class="fixed top-0 left-0 w-full z-50 glass-card px-6 py-4 md:px-12 flex justify-between items-center">
+    <div class="text-xl font-bold tracking-wider">SINAN.MP</div>
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Portfolio</a>
+      <a href="admin.html" class="bg-white text-black text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gray-200 transition">Admin</a>
+    </div>
+  </nav>
+
+  <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
+
+    <section class="mb-10">
+      <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-3xl font-bold">Let&apos;s talk</h1>
+        <p class="text-gray-600 mt-2 text-sm">Admin-managed content loaded from Firebase Realtime Database.</p>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">Work</h2>
+        <p class="text-gray-400 text-sm mt-2">Edit from Admin → Work items</p>
+      </div>
+
+      <div id="workGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section>
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">Client Love</h2>
+        <p class="text-gray-400 text-sm mt-2">Edit from Admin → Testimonials</p>
+      </div>
+
+      <div id="testimonialGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const STORAGE_KEYS = {
+      authed: 'ajzal_admin_authed_v1'
+    };
+
+    const DEFAULT_WORK = [
+      { title: 'Video Editing', subtitle: 'Project One' },
+      { title: 'Visual Storytelling', subtitle: 'Project Two' },
+      { title: 'Apple Style Video', subtitle: 'Project Three' },
+    ];
+
+    const DEFAULT_TESTIMONIALS = [
+      { quote: "Ajzal transformed our brand's social media presence with his motion graphics. The engagement on our reels skyrocketed.", name: 'Sarah L.', role: 'Marketing Director' },
+      { quote: 'Fast, professional, and incredibly creative. He understands the YouTube algorithm and edits for retention.', name: 'David K.', role: 'Content Creator' },
+      { quote: 'The promo video Ajzal created for our product launch was nothing short of cinematic. Highly recommended.', name: 'Michael T.', role: 'Founder, TechFlow' },
+    ];
+
+    const RTDB_PATHS = {
+      work: '/workItems/current/items',
+      testimonials: '/testimonials/current/items'
+    };
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '<')
+        .replaceAll('>', '>')
+        .replaceAll('"', '"')
+        .replaceAll("'", '&#039;');
+    }
+
+    async function renderWork() {
+      const grid = document.getElementById('workGrid');
+      const items = await window.__RTDB_DASHBOARD_API__.getItems(RTDB_PATHS.work, DEFAULT_WORK);
+
+      grid.innerHTML = '';
+      items.forEach((it) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl overflow-hidden group cursor-default';
+        card.innerHTML = `
+          <div class="h-48 bg-zinc-100 relative">
+            <div class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">Thumbnail Placeholder</div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-semibold mb-1 group-hover:text-purple-500 transition">${escapeHtml(it.title ?? '')}</h3>
+            <p class="text-gray-600 text-sm">${escapeHtml(it.subtitle ?? '')}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function renderTestimonials() {
+      const grid = document.getElementById('testimonialGrid');
+      const items = await window.__RTDB_DASHBOARD_API__.getItems(RTDB_PATHS.testimonials, DEFAULT_TESTIMONIALS);
+
+      grid.innerHTML = '';
+      items.forEach((t) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card p-8 rounded-2xl';
+        card.innerHTML = `
+          <p class="text-gray-700 italic mb-6 text-sm leading-relaxed">"${escapeHtml(t.quote ?? '')}"</p>
+          <div>
+            <h4 class="font-bold text-black">${escapeHtml(t.name ?? '')}</h4>
+            <span class="text-xs text-purple-500">${escapeHtml(t.role ?? '')}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function isAuthed() {
+      return localStorage.getItem(STORAGE_KEYS.authed) === '1';
+    }
+
+    function enforceAuth() {
+      if (isAuthed()) return true;
+      window.location.href = 'admin.html';
+      return false;
+    }
+
+    if (enforceAuth()) {
+      renderWork();
+      renderTestimonials();
+    }
+  </script>
+</body>
+</html>

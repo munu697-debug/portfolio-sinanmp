@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Sinan Mp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b0813',
+            purpleGlow: '#6d28d9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- RTDB helpers + Firebase Auth sign-in -->
+  <script type="module">
+    import { auth, rtdb } from './js/js/firebase-config.js';
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { ref, get, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+    window.__RTDB_ADMIN_API__ = {
+      async signInAdmin(email, password) {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        return cred;
+      },
+
+      async getItems(path, fallback) {
+        const snap = await get(ref(rtdb, path));
+        if (!snap.exists()) return fallback;
+
+        const data = snap.val();
+        return Array.isArray(data) ? data : fallback;
+      },
+
+      async setItems(path, items) {
+        await set(ref(rtdb, path), items);
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #0b0813;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .field-label { font-size: 12px; color: #9ca3af; }
+  </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+  <nav class="fixed top-0 left-0 w-full z-50 glass-card px-6 py-4 md:px-12 flex justify-between items-center">
+    <div class="text-xl font-bold tracking-wider">Sinan.MP</div>
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Portfolio</a>
+      <a href="dashboard.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
+
+    <section class="mb-10">
+      <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-3xl font-bold">Admin Panel</h1>
+        <p class="text-gray-400 mt-2 text-sm">Admin edits are stored in Realtime Database.</p>
+      </div>
+    </section>
+
+    <!-- Auth -->
+    <section id="authSection" class="glass-card rounded-2xl p-6">
+      <h2 class="text-xl font-semibold mb-4">Login</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div class="space-y-4">
+          <div>
+            <div class="field-label mb-1">Admin Username</div>
+            <input id="username" type="email" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter email" value="" />
+          </div>
+          <div>
+            <div class="field-label mb-1">Admin Password</div>
+            <input id="password" type="password" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter password" />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="loginBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition w-full">Login</button>
+          <button id="clearBtn" class="bg-zinc-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-zinc-800 transition w-full">Clear Data</button>
+        </div>
+      </div>
+      <p class="text-gray-500 text-xs mt-4">Use username: <span class="text-gray-300 font-mono">mpsinanomr@gmail.com</span> and password: <span class="text-gray-300 font-mono">Getintopc@123</span></p>
+    </section>
+
+    <!-- Panel -->
+    <section id="panelSection" class="hidden">
+
+      <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-semibold">Admin Panel</h2>
+            <p class="text-gray-400 text-sm mt-1">Logged in as <span id="authedUsername" class="text-gray-200 font-medium">&nbsp;</span></p>
+          </div>
+          <button id="logoutBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Logout</button>
+        </div>
+      </section>
+
+      <!-- Work editor -->
+      <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-xl font-semibold">Work Items</h2>
+            <p class="text-gray-400 text-sm mt-1">Updates appear on dashboard.html</p>
+          </div>
+          <div>
+            <button id="resetWorkBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+          </div>
+        </div>
+
+        <div id="workEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="saveWorkBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Work</button>
+        </div>
+      </section>
+
+      <!-- Testimonials editor -->
+      <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-xl font-semibold">Testimonials</h2>
+            <p class="text-gray-400 text-sm mt-1">Updates appear on dashboard.html</p>
+          </div>
+          <div>
+            <button id="resetTestimonialsBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+          </div>
+        </div>
+
+        <div id="testimonialEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="saveTestimonialsBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Testimonials</button>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-2xl p-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-semibold">Preview</h2>
+            <p class="text-gray-400 text-sm mt-1">Open the dashboard in a new tab</p>
+          </div>
+          <a href="dashboard.html" target="_blank" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Open Dashboard</a>
+        </div>
+      </section>
+
+    </section>
+
+  </main>
+
+  <script>
+    const STORAGE_KEYS = {
+      authed: 'ajzal_admin_authed_v1',
+      username: 'ajzal_admin_username_v1'
+    };
+
+    const ADMIN_CREDENTIALS = {
+      username: 'mpsinanomr@gmail.com',
+      password: 'Getintopc@123'
+    };
+
+    const DEFAULT_WORK = [
+      { title: 'Video Editing', subtitle: 'Project One' },
+      { title: 'Visual Storytelling', subtitle: 'Project Two' },
+      { title: 'Apple Style Video', subtitle: 'Project Three' },
+    ];
+
+    const DEFAULT_TESTIMONIALS = [
+      { quote: "Ajzal transformed our brand's social media presence with his motion graphics. The engagement on our reels skyrocketed.", name: 'Sarah L.', role: 'Marketing Director' },
+      { quote: 'Fast, professional, and incredibly creative. He understands the YouTube algorithm and edits for retention.', name: 'David K.', role: 'Content Creator' },
+      { quote: 'The promo video Ajzal created for our product launch was nothing short of cinematic. Highly recommended.', name: 'Michael T.', role: 'Founder, TechFlow' },
+    ];
+
+    const RTDB_PATHS = {
+      work: '/workItems/current/items',
+      testimonials: '/testimonials/current/items'
+    };
+
+    function escapeAttr(s) {
+      return String(s ?? '')
+        .replaceAll('"','"')
+        .replaceAll("'",'&#039;');
+    }
+
+    function readWorkFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-work-title]').forEach((el) => {
+        const i = Number(el.getAttribute('data-work-title'));
+        const title = el.value;
+        const subtitleEl = document.querySelector(`[data-work-subtitle="${i}"]`);
+        const subtitle = subtitleEl ? subtitleEl.value : '';
+        items[i] = { title, subtitle };
+      });
+      return items.filter(Boolean);
+    }
+
+    function readTestimonialsFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-test-quote]').forEach((el) => {
+        const i = Number(el.getAttribute('data-test-quote'));
+        const quote = el.value;
+        const nameEl = document.querySelector(`[data-test-name="${i}"]`);
+        const roleEl = document.querySelector(`[data-test-role="${i}"]`);
+        items[i] = { quote, name: nameEl ? nameEl.value : '', role: roleEl ? roleEl.value : '' };
+      });
+      return items.filter(Boolean);
+    }
+
+    async function loadWork() {
+      return window.__RTDB_ADMIN_API__.getItems(RTDB_PATHS.work, DEFAULT_WORK);
+    }
+
+    async function loadTestimonials() {
+      return window.__RTDB_ADMIN_API__.getItems(RTDB_PATHS.testimonials, DEFAULT_TESTIMONIALS);
+    }
+
+    async function saveWork(items) {
+      await window.__RTDB_ADMIN_API__.setItems(RTDB_PATHS.work, items);
+    }
+
+    async function saveTestimonials(items) {
+      await window.__RTDB_ADMIN_API__.setItems(RTDB_PATHS.testimonials, items);
+    }
+
+    function renderWorkEditor(items) {
+      const root = document.getElementById('workEditor');
+      root.innerHTML = '';
+      items.forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-5">
+            <div class="field-label mb-1">Title</div>
+            <input data-work-title="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(it.title)}" />
+          </div>
+          <div class="md:col-span-5">
+            <div class="field-label mb-1">Subtitle</div>
+            <input data-work-subtitle="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(it.subtitle)}" />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-work="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>
+        `;
+        root.appendChild(row);
+      });
+
+      const addWrap = document.createElement('div');
+      addWrap.className = 'mt-4';
+      addWrap.innerHTML = `
+        <button id="addWorkBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Work Item</button>
+      `;
+      root.appendChild(addWrap);
+
+      root.querySelectorAll('[data-remove-work]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const i = Number(btn.getAttribute('data-remove-work'));
+          const current = await loadWork();
+          current.splice(i, 1);
+          await saveWork(current);
+          renderWorkEditor(current);
+        });
+      });
+
+      root.querySelectorAll('#addWorkBtn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const current = await loadWork();
+          current.push({ title: 'New Work', subtitle: 'Project' });
+          await saveWork(current);
+          renderWorkEditor(current);
+        });
+      });
+    }
+
+    function renderTestimonialsEditor(items) {
+      const root = document.getElementById('testimonialEditor');
+      root.innerHTML = '';
+      items.forEach((t, idx) => {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-12">
+            <div class="field-label mb-1">Quote</div>
+            <textarea data-test-quote="${idx}" rows="3" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70">${escapeAttr(t.quote)}</textarea>
+          </div>
+          <div class="md:col-span-5">
+            <div class="field-label mb-1">Name</div>
+            <input data-test-name="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(t.name)}" />
+          </div>
+          <div class="md:col-span-5">
+            <div class="field-label mb-1">Role</div>
+            <input data-test-role="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(t.role)}" />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-test="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>
+        `;
+        root.appendChild(row);
+      });
+
+      const addWrap = document.createElement('div');
+      addWrap.className = 'mt-4';
+      addWrap.innerHTML = `
+        <button id="addTestBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Testimonial</button>
+      `;
+      root.appendChild(addWrap);
+
+      root.querySelectorAll('[data-remove-test]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const i = Number(btn.getAttribute('data-remove-test'));
+          const current = await loadTestimonials();
+          current.splice(i, 1);
+          await saveTestimonials(current);
+          renderTestimonialsEditor(current);
+        });
+      });
+
+      root.querySelectorAll('#addTestBtn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const current = await loadTestimonials();
+          current.push({ quote: 'New testimonial quote...', name: 'Name', role: 'Role' });
+          await saveTestimonials(current);
+          renderTestimonialsEditor(current);
+        });
+      });
+    }
+
+    function setAuthed(isAuthed, username) {
+      if (isAuthed) {
+        localStorage.setItem(STORAGE_KEYS.authed, '1');
+        if (username) localStorage.setItem(STORAGE_KEYS.username, username);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.authed);
+        localStorage.removeItem(STORAGE_KEYS.username);
+      }
+    }
+
+    function isAuthed() {
+      return localStorage.getItem(STORAGE_KEYS.authed) === '1';
+    }
+
+    function getAuthedUsername() {
+      return localStorage.getItem(STORAGE_KEYS.username) || '';
+    }
+
+    async function showAuthedUI() {
+      document.getElementById('authSection').classList.add('hidden');
+      document.getElementById('panelSection').classList.remove('hidden');
+
+      const username = getAuthedUsername();
+      const uEl = document.getElementById('authedUsername');
+      if (uEl) uEl.textContent = username;
+
+      const work = await loadWork();
+      const testimonials = await loadTestimonials();
+      renderWorkEditor(work);
+      renderTestimonialsEditor(testimonials);
+    }
+
+    function showAuthUI() {
+      document.getElementById('authSection').classList.remove('hidden');
+      document.getElementById('panelSection').classList.add('hidden');
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim();
+      const pw = document.getElementById('password').value.trim();
+
+      // Keep your demo UI credentials check
+      if (username !== ADMIN_CREDENTIALS.username || pw !== ADMIN_CREDENTIALS.password) {
+        alert('Incorrect username or password.');
+        return;
+      }
+
+      try {
+        await window.__RTDB_ADMIN_API__.signInAdmin(username, pw);
+        setAuthed(true, username);
+        await showAuthedUI();
+      } catch (e) {
+        console.error(e);
+        alert('Firebase Auth login failed. Check Firebase user credentials.');
+      }
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', async () => {
+      // clear local auth only (RTDB not cleared to avoid accidental overwrites)
+      localStorage.removeItem(STORAGE_KEYS.authed);
+      localStorage.removeItem(STORAGE_KEYS.username);
+      location.reload();
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      setAuthed(false);
+      showAuthUI();
+      const uEl = document.getElementById('authedUsername');
+      if (uEl) uEl.textContent = '';
+    });
+
+    document.getElementById('saveWorkBtn').addEventListener('click', async () => {
+      const items = readWorkFromInputs();
+      await saveWork(items);
+      alert('Work saved to Firebase Realtime Database.');
+    });
+
+    document.getElementById('saveTestimonialsBtn').addEventListener('click', async () => {
+      const items = readTestimonialsFromInputs();
+      await saveTestimonials(items);
+      alert('Testimonials saved to Firebase Realtime Database.');
+    });
+
+    document.getElementById('resetWorkBtn').addEventListener('click', async () => {
+      await saveWork(DEFAULT_WORK);
+      renderWorkEditor(DEFAULT_WORK);
+    });
+
+    document.getElementById('resetTestimonialsBtn').addEventListener('click', async () => {
+      await saveTestimonials(DEFAULT_TESTIMONIALS);
+      renderTestimonialsEditor(DEFAULT_TESTIMONIALS);
+    });
+
+    if (isAuthed()) showAuthedUI();
+    else showAuthUI();
+  </script>
+</body>
+</html>

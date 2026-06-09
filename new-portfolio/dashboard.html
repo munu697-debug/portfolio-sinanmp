@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Sinan MP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b0813',
+            purpleGlow: '#6d28d9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .glass-card {
+      background: rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .tab-btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      color: #6b7280; cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn.active { color: #fff; background: #6d28d9; }
+    .tab-btn:hover:not(.active) { color: #000; background: rgba(0,0,0,0.03); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+  <nav class="fixed top-0 left-0 w-full z-50 glass-card px-6 py-4 md:px-12 flex justify-between items-center">
+    <div class="text-xl font-bold tracking-wider">SINAN.MP</div>
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Portfolio</a>
+      <a href="admin.html" class="bg-white text-black text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gray-200 transition">Admin</a>
+    </div>
+  </nav>
+
+  <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
+
+    <section class="mb-10">
+      <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-3xl font-bold">Let's talk</h1>
+        <p class="text-gray-600 mt-2 text-sm">Admin-managed content loaded from Firebase Realtime Database.</p>
+      </div>
+    </section>
+
+    <!-- Section Tabs -->
+    <div class="flex items-center gap-2 mb-8 flex-wrap">
+      <button class="tab-btn active" data-tab="work">Work</button>
+      <button class="tab-btn" data-tab="videos">Videos</button>
+      <button class="tab-btn" data-tab="testimonials">Client Love</button>
+    </div>
+
+    <!-- Work Section -->
+    <div id="tab-work" class="tab-content">
+      <section class="mb-10">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold">Work</h2>
+          <p class="text-gray-400 text-sm mt-2">Edit from Admin &rarr; Work items</p>
+        </div>
+        <div id="workGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      </section>
+    </div>
+
+    <!-- Videos Section -->
+    <div id="tab-videos" class="tab-content hidden">
+      <section class="mb-10">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold">Videos</h2>
+          <p class="text-gray-400 text-sm mt-2">Edit from Admin &rarr; Videos</p>
+        </div>
+        <div id="videosGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </section>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div id="tab-testimonials" class="tab-content hidden">
+      <section>
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold">Client Love</h2>
+          <p class="text-gray-400 text-sm mt-2">Edit from Admin &rarr; Testimonials</p>
+        </div>
+        <div id="testimonialGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { rtdb } from './js/firebase-config.js';
+    import { ref, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+    const STORAGE_KEYS = { authed: 'ajzal_admin_authed_v1' };
+
+    const DEFAULT_WORK = [
+      { title: 'Video Editing', subtitle: 'Project One', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop' },
+      { title: 'Visual Storytelling', subtitle: 'Project Two', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&auto=format&fit=crop' },
+      { title: 'Apple Style Video', subtitle: 'Project Three', image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const DEFAULT_TESTIMONIALS = [
+      { quote: "Ajzal transformed our brand's social media presence with his motion graphics. The engagement on our reels skyrocketed.", name: 'Sarah L.', role: 'Marketing Director', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+      { quote: 'Fast, professional, and incredibly creative. He understands the YouTube algorithm and edits for retention.', name: 'David K.', role: 'Content Creator', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
+      { quote: 'The promo video Ajzal created for our product launch was nothing short of cinematic. Highly recommended.', name: 'Michael T.', role: 'Founder, TechFlow', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' }
+    ];
+
+    const DEFAULT_VIDEOS = [
+      { title: 'Demo Reel 2024', youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', category: 'Reels', description: 'My best work from 2024', thumbnailUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const RTDB_PATHS = {
+      work: '/workItems/current/items',
+      testimonials: '/testimonials/current/items',
+      videos: '/videos/current/items',
+      categories: '/categories/current/items'
+    };
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function getYouTubeId(url) {
+      if (!url) return null;
+      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+      return match ? match[1] : null;
+    }
+
+    async function getItems(path, fallback) {
+      const snap = await get(ref(rtdb, path));
+      if (!snap.exists()) return fallback;
+      const data = snap.val();
+      return Array.isArray(data) ? data : fallback;
+    }
+
+    async function renderWork() {
+      const grid = document.getElementById('workGrid');
+      const items = await getItems(RTDB_PATHS.work, DEFAULT_WORK);
+      grid.innerHTML = '';
+      items.forEach((it) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl overflow-hidden group cursor-default';
+        const img = it.image || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop';
+        card.innerHTML = `
+          <div class="h-48 bg-zinc-100 relative overflow-hidden">
+            <img src="${escapeHtml(img)}" alt="${escapeHtml(it.title || '')}" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-semibold mb-1 group-hover:text-purple-600 transition">${escapeHtml(it.title ?? '')}</h3>
+            <p class="text-gray-600 text-sm">${escapeHtml(it.subtitle ?? '')}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function renderTestimonials() {
+      const grid = document.getElementById('testimonialGrid');
+      const items = await getItems(RTDB_PATHS.testimonials, DEFAULT_TESTIMONIALS);
+      grid.innerHTML = '';
+      items.forEach((t) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card p-8 rounded-2xl';
+        const avatar = t.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
+        card.innerHTML = `
+          <div class="flex items-center gap-3 mb-4">
+            <img src="${escapeHtml(avatar)}" alt="${escapeHtml(t.name || '')}" class="w-10 h-10 rounded-full object-cover" />
+            <div>
+              <h4 class="font-bold text-black">${escapeHtml(t.name ?? '')}</h4>
+              <span class="text-xs text-purple-600">${escapeHtml(t.role ?? '')}</span>
+            </div>
+          </div>
+          <p class="text-gray-700 italic text-sm leading-relaxed">"${escapeHtml(t.quote ?? '')}"</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function renderVideos() {
+      const grid = document.getElementById('videosGrid');
+      const items = await getItems(RTDB_PATHS.videos, DEFAULT_VIDEOS);
+      const categories = await getItems(RTDB_PATHS.categories, []);
+      grid.innerHTML = '';
+      if (items.length === 0) {
+        grid.innerHTML = '<div class="text-center text-gray-400 py-12 col-span-2">No videos yet. Add them from the Admin panel.</div>';
+        return;
+      }
+      items.forEach((v) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl overflow-hidden';
+        const thumb = v.thumbnailUrl || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop';
+        const ytId = getYouTubeId(v.youtubeUrl);
+        const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : '';
+        card.innerHTML = `
+          <div class="h-48 bg-zinc-100 relative overflow-hidden">
+            ${embedUrl ? `<iframe class="w-full h-full" src="${escapeHtml(embedUrl)}" title="${escapeHtml(v.title || '')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+              : `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(v.title || '')}" class="w-full h-full object-cover" />`}
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-2 py-1 rounded">${escapeHtml(v.category || 'General')}</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-1">${escapeHtml(v.title ?? '')}</h3>
+            <p class="text-gray-600 text-sm">${escapeHtml(v.description ?? '')}</p>
+            ${v.youtubeUrl ? `<a href="${escapeHtml(v.youtubeUrl)}" target="_blank" class="inline-block mt-3 text-sm text-purple-600 hover:text-purple-800 font-medium">Watch on YouTube &rarr;</a>` : ''}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function isAuthed() {
+      return localStorage.getItem(STORAGE_KEYS.authed) === '1';
+    }
+
+    function enforceAuth() {
+      if (isAuthed()) return true;
+      window.location.href = 'admin.html';
+      return false;
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+      });
+    });
+
+    if (enforceAuth()) {
+      renderWork();
+      renderTestimonials();
+      renderVideos();
+    }
+  </script>
+</body>
+</html>

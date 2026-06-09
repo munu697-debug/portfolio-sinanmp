@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Sinan Mp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b0813',
+            purpleGlow: '#6d28d9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #0b0813;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .field-label { font-size: 12px; color: #9ca3af; }
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #6d28d9;
+      background: rgba(109, 40, 217, 0.05);
+    }
+    .upload-zone.dragover { border-color: #a855f7; }
+    .preview-thumb {
+      width: 80px; height: 80px; border-radius: 8px; object-fit: cover;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .tab-btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      color: #9ca3af; cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn.active { color: #fff; background: rgba(109, 40, 217, 0.2); border: 1px solid rgba(109, 40, 217, 0.4); }
+    .tab-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.03); }
+    .hidden { display: none !important; }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+  <nav class="fixed top-0 left-0 w-full z-50 glass-card px-6 py-4 md:px-12 flex justify-between items-center">
+    <div class="text-xl font-bold tracking-wider">Sinan.MP</div>
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Portfolio</a>
+      <a href="dashboard.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
+
+    <section class="mb-10">
+      <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-3xl font-bold">Admin Panel</h1>
+        <p class="text-gray-400 mt-2 text-sm">Manage Work, Testimonials, Videos, Categories, and Upload images.</p>
+      </div>
+    </section>
+
+    <!-- Auth -->
+    <section id="authSection" class="glass-card rounded-2xl p-6">
+      <h2 class="text-xl font-semibold mb-4">Login</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div class="space-y-4">
+          <div>
+            <div class="field-label mb-1">Admin Username</div>
+            <input id="username" type="email" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter email" value="" />
+          </div>
+          <div>
+            <div class="field-label mb-1">Admin Password</div>
+            <input id="password" type="password" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter password" />
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="loginBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition w-full">Login</button>
+          <button id="clearBtn" class="bg-zinc-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-zinc-800 transition w-full">Clear Data</button>
+        </div>
+      </div>
+      <p class="text-gray-500 text-xs mt-4">Use username: <span class="text-gray-300 font-mono">mpsinanomr@gmail.com</span> and password: <span class="text-gray-300 font-mono">Getintopc@123</span></p>
+    </section>
+
+    <!-- Panel -->
+    <section id="panelSection" class="hidden">
+
+      <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-semibold">Admin Panel</h2>
+            <p class="text-gray-400 text-sm mt-1">Logged in as <span id="authedUsername" class="text-gray-200 font-medium">&nbsp;</span></p>
+          </div>
+          <button id="logoutBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Logout</button>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <div class="flex items-center gap-2 mb-8 flex-wrap">
+        <button class="tab-btn active" data-tab="work">Work</button>
+        <button class="tab-btn" data-tab="testimonials">Testimonials</button>
+        <button class="tab-btn" data-tab="videos">Videos</button>
+        <button class="tab-btn" data-tab="categories">Categories</button>
+        <button class="tab-btn" data-tab="upload">Upload</button>
+      </div>
+
+      <!-- Work Tab -->
+      <div id="tab-work" class="tab-content">
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2 class="text-xl font-semibold">Work Items</h2>
+              <p class="text-gray-400 text-sm mt-1">Updates appear on the portfolio Work section</p>
+            </div>
+            <div>
+              <button id="resetWorkBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+            </div>
+          </div>
+          <div id="workEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+          <div class="mt-6 flex justify-end">
+            <button id="saveWorkBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Work</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Testimonials Tab -->
+      <div id="tab-testimonials" class="tab-content hidden">
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2 class="text-xl font-semibold">Testimonials</h2>
+              <p class="text-gray-400 text-sm mt-1">Updates appear on the portfolio Client Love section</p>
+            </div>
+            <div>
+              <button id="resetTestimonialsBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+            </div>
+          </div>
+          <div id="testimonialEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+          <div class="mt-6 flex justify-end">
+            <button id="saveTestimonialsBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Testimonials</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Videos Tab -->
+      <div id="tab-videos" class="tab-content hidden">
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2 class="text-xl font-semibold">Videos</h2>
+              <p class="text-gray-400 text-sm mt-1">YouTube links shown on Dashboard</p>
+            </div>
+            <div>
+              <button id="resetVideosBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+            </div>
+          </div>
+          <div id="videoEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+          <div class="mt-6 flex justify-end">
+            <button id="saveVideosBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Videos</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Categories Tab -->
+      <div id="tab-categories" class="tab-content hidden">
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2 class="text-xl font-semibold">Categories</h2>
+              <p class="text-gray-400 text-sm mt-1">Filter videos on Dashboard</p>
+            </div>
+            <div>
+              <button id="resetCategoriesBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Reset to defaults</button>
+            </div>
+          </div>
+          <div id="categoryEditor" class="mt-6 grid grid-cols-1 gap-5"></div>
+          <div class="mt-6 flex justify-end">
+            <button id="saveCategoriesBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition">Save Categories</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Upload Tab -->
+      <div id="tab-upload" class="tab-content hidden">
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between gap-4 flex-wrap mb-4">
+            <div>
+              <h2 class="text-xl font-semibold">Image Upload</h2>
+              <p class="text-gray-400 text-sm mt-1">Upload to Firebase Storage and get direct URL</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div class="field-label mb-2">Drop image or click to browse</div>
+              <div class="upload-zone" id="dropZone">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p class="text-gray-500 text-sm">Drop image here or click to upload</p>
+                <p class="text-gray-600 text-xs mt-1">PNG, JPG, WEBP (max 5MB)</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden" />
+              </div>
+              <div id="uploadProgress" class="hidden mt-4">
+                <div class="flex items-center gap-2 text-sm text-gray-400">
+                  <div class="spin w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+                  <span id="uploadStatus">Uploading...</span>
+                </div>
+              </div>
+              <div id="uploadResult" class="hidden mt-4">
+                <div class="field-label mb-1">Uploaded URL</div>
+                <div class="flex gap-2">
+                  <input id="uploadedUrl" type="text" readonly class="flex-1 bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none text-sm text-gray-300" />
+                  <button id="copyUrlBtn" class="bg-zinc-800 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-zinc-700 transition">Copy</button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="field-label mb-2">Preview</div>
+              <div id="uploadPreview" class="flex items-center justify-center w-full h-48 bg-zinc-950/50 border border-zinc-800 rounded-xl overflow-hidden">
+                <span class="text-gray-500 text-sm">No image selected</span>
+              </div>
+              <div id="uploadInfo" class="hidden mt-3 text-xs text-gray-500 space-y-1">
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="glass-card rounded-2xl p-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 class="text-xl font-semibold">Preview</h2>
+            <p class="text-gray-400 text-sm mt-1">Open the dashboard in a new tab</p>
+          </div>
+          <a href="dashboard.html" target="_blank" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Open Dashboard</a>
+        </div>
+      </section>
+
+    </section>
+
+  </main>
+
+  <script type="module">
+    import { auth, rtdb, storage } from './js/firebase-config.js';
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { ref, get, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+    import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
+    const STORAGE_KEYS = { authed: 'ajzal_admin_authed_v1', username: 'ajzal_admin_username_v1' };
+    const ADMIN_CREDENTIALS = { username: 'mpsinanomr@gmail.com', password: 'Getintopc@123' };
+
+    const DEFAULT_WORK = [
+      { title: 'Video Editing', subtitle: 'Project One', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop' },
+      { title: 'Visual Storytelling', subtitle: 'Project Two', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&auto=format&fit=crop' },
+      { title: 'Apple Style Video', subtitle: 'Project Three', image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const DEFAULT_TESTIMONIALS = [
+      { quote: "Ajzal transformed our brand's social media presence with his motion graphics. The engagement on our reels skyrocketed.", name: 'Sarah L.', role: 'Marketing Director', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+      { quote: 'Fast, professional, and incredibly creative. He understands the YouTube algorithm and edits for retention.', name: 'David K.', role: 'Content Creator', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
+      { quote: 'The promo video Ajzal created for our product launch was nothing short of cinematic. Highly recommended.', name: 'Michael T.', role: 'Founder, TechFlow', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' }
+    ];
+
+    const DEFAULT_VIDEOS = [
+      { title: 'Demo Reel 2024', youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', category: 'Reels', description: 'My best work from 2024', thumbnailUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const DEFAULT_CATEGORIES = [
+      { name: 'Reels', order: 1 },
+      { name: 'YouTube', order: 2 },
+      { name: 'Motion Graphics', order: 3 }
+    ];
+
+    const RTDB_PATHS = {
+      work: '/workItems/current/items',
+      testimonials: '/testimonials/current/items',
+      videos: '/videos/current/items',
+      categories: '/categories/current/items'
+    };
+
+    function escapeAttr(s) {
+      return String(s ?? '').replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+
+    async function rtdbGet(path, fallback) {
+      const snap = await get(ref(rtdb, path));
+      if (!snap.exists()) return fallback;
+      const data = snap.val();
+      return Array.isArray(data) ? data : fallback;
+    }
+    async function rtdbSet(path, items) {
+      await set(ref(rtdb, path), items);
+    }
+
+    async function loadWork() { return rtdbGet(RTDB_PATHS.work, DEFAULT_WORK); }
+    async function loadTestimonials() { return rtdbGet(RTDB_PATHS.testimonials, DEFAULT_TESTIMONIALS); }
+    async function loadVideos() { return rtdbGet(RTDB_PATHS.videos, DEFAULT_VIDEOS); }
+    async function loadCategories() { return rtdbGet(RTDB_PATHS.categories, DEFAULT_CATEGORIES); }
+    async function saveWork(items) { await rtdbSet(RTDB_PATHS.work, items); }
+    async function saveTestimonials(items) { await rtdbSet(RTDB_PATHS.testimonials, items); }
+    async function saveVideos(items) { await rtdbSet(RTDB_PATHS.videos, items); }
+    async function saveCategories(items) { await rtdbSet(RTDB_PATHS.categories, items); }
+
+    function readWorkFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-work-title]').forEach(el => {
+        const i = Number(el.getAttribute('data-work-title'));
+        const title = el.value;
+        const subtitleEl = document.querySelector(`[data-work-subtitle="${i}"]`);
+        const imageEl = document.querySelector(`[data-work-image="${i}"]`);
+        items[i] = { title, subtitle: subtitleEl ? subtitleEl.value : '', image: imageEl ? imageEl.value : '' };
+      });
+      return items.filter(Boolean);
+    }
+    function readTestimonialsFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-test-quote]').forEach(el => {
+        const i = Number(el.getAttribute('data-test-quote'));
+        const quote = el.value;
+        const nameEl = document.querySelector(`[data-test-name="${i}"]`);
+        const roleEl = document.querySelector(`[data-test-role="${i}"]`);
+        const avatarEl = document.querySelector(`[data-test-avatar="${i}"]`);
+        items[i] = { quote, name: nameEl ? nameEl.value : '', role: roleEl ? roleEl.value : '', avatar: avatarEl ? avatarEl.value : '' };
+      });
+      return items.filter(Boolean);
+    }
+    function readVideosFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-video-title]').forEach(el => {
+        const i = Number(el.getAttribute('data-video-title'));
+        const title = el.value;
+        const urlEl = document.querySelector(`[data-video-url="${i}"]`);
+        const catEl = document.querySelector(`[data-video-category="${i}"]`);
+        const descEl = document.querySelector(`[data-video-desc="${i}"]`);
+        const thumbEl = document.querySelector(`[data-video-thumb="${i}"]`);
+        items[i] = { title, youtubeUrl: urlEl ? urlEl.value : '', category: catEl ? catEl.value : '', description: descEl ? descEl.value : '', thumbnailUrl: thumbEl ? thumbEl.value : '' };
+      });
+      return items.filter(Boolean);
+    }
+    function readCategoriesFromInputs() {
+      const items = [];
+      document.querySelectorAll('[data-cat-name]').forEach(el => {
+        const i = Number(el.getAttribute('data-cat-name'));
+        const name = el.value;
+        const orderEl = document.querySelector(`[data-cat-order="${i}"]`);
+        items[i] = { name, order: orderEl ? parseInt(orderEl.value || '0', 10) : 0 };
+      });
+      return items.filter(Boolean);
+    }
+
+    function renderWorkEditor(items) {
+      const root = document.getElementById('workEditor');
+      root.innerHTML = '';
+      items.forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-4">
+            <div class="field-label mb-1">Title</div>
+            <input data-work-title="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(it.title)}" />
+          </div>
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">Subtitle</div>
+            <input data-work-subtitle="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(it.subtitle)}" />
+          </div>
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">Image URL</div>
+            <input data-work-image="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70 text-sm" value="${escapeAttr(it.image || '')}" placeholder="https://..." />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-work="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>`;
+        root.appendChild(row);
+      });
+      const addWrap = document.createElement('div'); addWrap.className = 'mt-4';
+      addWrap.innerHTML = `<button id="addWorkBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Work Item</button>`;
+      root.appendChild(addWrap);
+      root.querySelectorAll('[data-remove-work]').forEach(btn => {
+        btn.addEventListener('click', async () => { const i = Number(btn.getAttribute('data-remove-work')); const current = await loadWork(); current.splice(i,1); await saveWork(current); renderWorkEditor(current); });
+      });
+      root.querySelectorAll('#addWorkBtn').forEach(btn => {
+        btn.addEventListener('click', async () => { const current = await loadWork(); current.push({ title: 'New Work', subtitle: 'Project', image: '' }); await saveWork(current); renderWorkEditor(current); });
+      });
+    }
+
+    function renderTestimonialsEditor(items) {
+      const root = document.getElementById('testimonialEditor');
+      root.innerHTML = '';
+      items.forEach((t, idx) => {
+        const row = document.createElement('div'); row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-12">
+            <div class="field-label mb-1">Quote</div>
+            <textarea data-test-quote="${idx}" rows="3" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70">${escapeAttr(t.quote)}</textarea>
+          </div>
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">Name</div>
+            <input data-test-name="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(t.name)}" />
+          </div>
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">Role</div>
+            <input data-test-role="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(t.role)}" />
+          </div>
+          <div class="md:col-span-4">
+            <div class="field-label mb-1">Avatar URL</div>
+            <input data-test-avatar="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70 text-sm" value="${escapeAttr(t.avatar || '')}" placeholder="https://..." />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-test="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>`;
+        root.appendChild(row);
+      });
+      const addWrap = document.createElement('div'); addWrap.className = 'mt-4';
+      addWrap.innerHTML = `<button id="addTestBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Testimonial</button>`;
+      root.appendChild(addWrap);
+      root.querySelectorAll('[data-remove-test]').forEach(btn => {
+        btn.addEventListener('click', async () => { const i = Number(btn.getAttribute('data-remove-test')); const current = await loadTestimonials(); current.splice(i,1); await saveTestimonials(current); renderTestimonialsEditor(current); });
+      });
+      root.querySelectorAll('#addTestBtn').forEach(btn => {
+        btn.addEventListener('click', async () => { const current = await loadTestimonials(); current.push({ quote: 'New quote...', name: 'Name', role: 'Role', avatar: '' }); await saveTestimonials(current); renderTestimonialsEditor(current); });
+      });
+    }
+
+    function renderVideosEditor(items) {
+      const root = document.getElementById('videoEditor');
+      root.innerHTML = '';
+      items.forEach((v, idx) => {
+        const row = document.createElement('div'); row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">Title</div>
+            <input data-video-title="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(v.title)}" />
+          </div>
+          <div class="md:col-span-3">
+            <div class="field-label mb-1">YouTube URL</div>
+            <input data-video-url="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70 text-sm" value="${escapeAttr(v.youtubeUrl)}" placeholder="https://youtube.com/watch?v=..." />
+          </div>
+          <div class="md:col-span-2">
+            <div class="field-label mb-1">Category</div>
+            <input data-video-category="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(v.category)}" />
+          </div>
+          <div class="md:col-span-2">
+            <div class="field-label mb-1">Thumbnail URL</div>
+            <input data-video-thumb="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70 text-sm" value="${escapeAttr(v.thumbnailUrl || '')}" placeholder="https://..." />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-video="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>
+          <div class="md:col-span-12">
+            <div class="field-label mb-1">Description</div>
+            <input data-video-desc="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70 text-sm" value="${escapeAttr(v.description || '')}" placeholder="Short description..." />
+          </div>`;
+        root.appendChild(row);
+      });
+      const addWrap = document.createElement('div'); addWrap.className = 'mt-4';
+      addWrap.innerHTML = `<button id="addVideoBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Video</button>`;
+      root.appendChild(addWrap);
+      root.querySelectorAll('[data-remove-video]').forEach(btn => {
+        btn.addEventListener('click', async () => { const i = Number(btn.getAttribute('data-remove-video')); const current = await loadVideos(); current.splice(i,1); await saveVideos(current); renderVideosEditor(current); });
+      });
+      root.querySelectorAll('#addVideoBtn').forEach(btn => {
+        btn.addEventListener('click', async () => { const current = await loadVideos(); current.push({ title: 'New Video', youtubeUrl: '', category: 'Reels', description: '', thumbnailUrl: '' }); await saveVideos(current); renderVideosEditor(current); });
+      });
+    }
+
+    function renderCategoriesEditor(items) {
+      const root = document.getElementById('categoryEditor');
+      root.innerHTML = '';
+      items.forEach((c, idx) => {
+        const row = document.createElement('div'); row.className = 'grid grid-cols-1 md:grid-cols-12 gap-4';
+        row.innerHTML = `
+          <div class="md:col-span-8">
+            <div class="field-label mb-1">Category Name</div>
+            <input data-cat-name="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(c.name)}" />
+          </div>
+          <div class="md:col-span-2">
+            <div class="field-label mb-1">Order</div>
+            <input data-cat-order="${idx}" type="number" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" value="${escapeAttr(String(c.order ?? 0))}" />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button data-remove-cat="${idx}" class="w-full bg-zinc-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-zinc-800 transition">Remove</button>
+          </div>`;
+        root.appendChild(row);
+      });
+      const addWrap = document.createElement('div'); addWrap.className = 'mt-4';
+      addWrap.innerHTML = `<button id="addCatBtn" class="bg-purpleGlow text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition">Add Category</button>`;
+      root.appendChild(addWrap);
+      root.querySelectorAll('[data-remove-cat]').forEach(btn => {
+        btn.addEventListener('click', async () => { const i = Number(btn.getAttribute('data-remove-cat')); const current = await loadCategories(); current.splice(i,1); await saveCategories(current); renderCategoriesEditor(current); });
+      });
+      root.querySelectorAll('#addCatBtn').forEach(btn => {
+        btn.addEventListener('click', async () => { const current = await loadCategories(); current.push({ name: 'New Category', order: current.length + 1 }); await saveCategories(current); renderCategoriesEditor(current); });
+      });
+    }
+
+    function setAuthed(isAuthed, username) {
+      if (isAuthed) {
+        localStorage.setItem(STORAGE_KEYS.authed, '1');
+        if (username) localStorage.setItem(STORAGE_KEYS.username, username);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.authed);
+        localStorage.removeItem(STORAGE_KEYS.username);
+      }
+    }
+    function isAuthed() { return localStorage.getItem(STORAGE_KEYS.authed) === '1'; }
+    function getAuthedUsername() { return localStorage.getItem(STORAGE_KEYS.username) || ''; }
+
+    async function showAuthedUI() {
+      document.getElementById('authSection').classList.add('hidden');
+      document.getElementById('panelSection').classList.remove('hidden');
+      const uEl = document.getElementById('authedUsername');
+      if (uEl) uEl.textContent = getAuthedUsername();
+      const work = await loadWork();
+      const testimonials = await loadTestimonials();
+      renderWorkEditor(work);
+      renderTestimonialsEditor(testimonials);
+    }
+    function showAuthUI() {
+      document.getElementById('authSection').classList.remove('hidden');
+      document.getElementById('panelSection').classList.add('hidden');
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim();
+      const pw = document.getElementById('password').value.trim();
+      if (username !== ADMIN_CREDENTIALS.username || pw !== ADMIN_CREDENTIALS.password) { alert('Incorrect username or password.'); return; }
+      try { await signInWithEmailAndPassword(auth, username, pw); setAuthed(true, username); await showAuthedUI(); } catch (e) { console.error(e); alert('Firebase Auth login failed. Check Firebase user credentials.'); }
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => { localStorage.removeItem(STORAGE_KEYS.authed); localStorage.removeItem(STORAGE_KEYS.username); location.reload(); });
+    document.getElementById('logoutBtn')?.addEventListener('click', () => { setAuthed(false); showAuthUI(); const uEl = document.getElementById('authedUsername'); if (uEl) uEl.textContent = ''; });
+    document.getElementById('saveWorkBtn').addEventListener('click', async () => { const items = readWorkFromInputs(); await saveWork(items); alert('Work saved to Firebase Realtime Database.'); });
+    document.getElementById('saveTestimonialsBtn').addEventListener('click', async () => { const items = readTestimonialsFromInputs(); await saveTestimonials(items); alert('Testimonials saved to Firebase Realtime Database.'); });
+    document.getElementById('saveVideosBtn').addEventListener('click', async () => { const items = readVideosFromInputs(); await saveVideos(items); alert('Videos saved to Firebase Realtime Database.'); });
+    document.getElementById('saveCategoriesBtn').addEventListener('click', async () => { const items = readCategoriesFromInputs(); await saveCategories(items); alert('Categories saved to Firebase Realtime Database.'); });
+    document.getElementById('resetWorkBtn').addEventListener('click', async () => { await saveWork(DEFAULT_WORK); renderWorkEditor(DEFAULT_WORK); });
+    document.getElementById('resetTestimonialsBtn').addEventListener('click', async () => { await saveTestimonials(DEFAULT_TESTIMONIALS); renderTestimonialsEditor(DEFAULT_TESTIMONIALS); });
+    document.getElementById('resetVideosBtn').addEventListener('click', async () => { await saveVideos(DEFAULT_VIDEOS); renderVideosEditor(DEFAULT_VIDEOS); });
+    document.getElementById('resetCategoriesBtn').addEventListener('click', async () => { await saveCategories(DEFAULT_CATEGORIES); renderCategoriesEditor(DEFAULT_CATEGORIES); });
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+        // Load data on demand
+        if (tab === 'videos') {
+          loadVideos().then(v => renderVideosEditor(v));
+        } else if (tab === 'categories') {
+          loadCategories().then(c => renderCategoriesEditor(c));
+        }
+      });
+    });
+
+    // Image Upload
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const uploadResult = document.getElementById('uploadResult');
+    const uploadedUrl = document.getElementById('uploadedUrl');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const uploadInfo = document.getElementById('uploadInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const copyUrlBtn = document.getElementById('copyUrlBtn');
+
+    function formatBytes(bytes) { if (bytes === 0) return '0 Bytes'; const k = 1024; const sizes = ['Bytes','KB','MB','GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; }
+
+    function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) { alert('Please select an image file'); return; }
+      if (file.size > 5 * 1024 * 1024) { alert('File too large (max 5MB)'); return; }
+      const reader = new FileReader();
+      reader.onload = e => { uploadPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`; };
+      reader.readAsDataURL(file);
+      fileName.textContent = 'Name: ' + file.name;
+      fileSize.textContent = 'Size: ' + formatBytes(file.size);
+      uploadInfo.classList.remove('hidden');
+      doUpload(file);
+    }
+
+    async function doUpload(file) {
+      uploadProgress.classList.remove('hidden');
+      uploadResult.classList.add('hidden');
+      uploadStatus.textContent = 'Uploading to Firebase Storage...';
+      try {
+        const timestamp = Date.now();
+        const path = `uploads/images/${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        const sRef = storageRef(storage, path);
+        const snapshot = await uploadBytes(sRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        uploadedUrl.value = url;
+        uploadResult.classList.remove('hidden');
+        uploadStatus.textContent = 'Upload complete!';
+      } catch (err) {
+        console.error(err);
+        uploadStatus.textContent = 'Upload failed: ' + (err.message || err);
+      }
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0]; if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', () => { const file = fileInput.files[0]; if (file) handleFile(file); });
+
+    copyUrlBtn.addEventListener('click', () => {
+      uploadedUrl.select();
+      document.execCommand('copy');
+      copyUrlBtn.textContent = 'Copied!';
+      setTimeout(() => copyUrlBtn.textContent = 'Copy', 2000);
+    });
+
+    if (isAuthed()) showAuthedUI();
+    else showAuthUI();
+  </script>
+</body>
+</html>

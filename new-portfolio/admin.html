@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin | Sinan MP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -11,73 +13,129 @@
         extend: {
           colors: {
             darkBg: '#0b0813',
-            purpleGlow: '#6d28d9',
           }
         }
       }
     };
   </script>
   <style>
-    body { background-color: #0b0813; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-    .field-label { font-size: 12px; color: #9ca3af; }
-    .tab-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #9ca3af; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
-    .tab-btn.active { color: #fff; background: rgba(109,40,217,0.2); border-color: rgba(109,40,217,0.4); }
-    .tab-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.03); }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 50%, #13101C 0%, #0B0813 100%);
+      color: #FFFFFF;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: #00E676;
+      opacity: 0.05;
+      filter: blur(120px);
+      top: 20%;
+      left: 25%;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .glass-card {
+      background: rgba(19, 16, 28, 0.75);
+      border: 1px solid rgba(38, 34, 53, 0.8);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
     .hidden { display: none !important; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 8px; }
+    .btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s ease; border: none; }
+    .btn-primary { background: #00E676; color: #0B0813; }
+    .btn-primary:hover { opacity: 0.95; box-shadow: 0 0 20px rgba(0, 230, 118, 0.35); }
+    .btn-secondary { background: transparent; color: #94A3B8; border: 1px solid #2C2838; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.03); color: #FFFFFF; border-color: #4A455A; }
+    .btn-sm { padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; }
+    .btn-green { background: #00E676; color: #0B0813; }
+    .btn-green:hover { opacity: 0.95; box-shadow: 0 0 16px rgba(0, 230, 118, 0.3); }
+    .btn-dark { background: transparent; color: #94A3B8; border: 1px solid #2C2838; }
+    .btn-dark:hover { background: rgba(255,255,255,0.03); color: #FFFFFF; border-color: #4A455A; }
+    .btn-red { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-red:hover { background: rgba(239,68,68,0.2); }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .input-wrapper i { position: absolute; left: 16px; color: #64748B; font-size: 16px; transition: color 0.3s ease; }
+    .input-wrapper input, .input-wrapper select, .input-wrapper textarea {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      background: #1A1625;
+      border: 1px solid #2C2838;
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    .input-wrapper input:focus, .input-wrapper select:focus, .input-wrapper textarea:focus { border-color: #00E676; box-shadow: 0 0 12px rgba(0, 230, 118, 0.15); }
+    .input-wrapper input:focus + i { color: #00E676; }
+    .tab-btn { padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #94A3B8; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; background: transparent; }
+    .tab-btn.active { color: #00E676; background: rgba(0, 230, 118, 0.08); border-color: rgba(0, 230, 118, 0.3); }
+    .tab-btn:hover:not(.active) { color: #FFFFFF; background: rgba(255,255,255,0.03); }
+    .field-label { font-size: 13px; font-weight: 500; color: #94A3B8; margin-bottom: 8px; display: block; }
+    .form-group { margin-bottom: 20px; }
+    .toast { position: fixed; top: 24px; right: 24px; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: #00E676; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 100; transition: opacity 0.3s; }
+    .toast.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
   </style>
 </head>
-<body class="overflow-x-hidden antialiased">
+<body class="antialiased">
 
-  <nav class="fixed top-0 left-0 w-full z-50 glass-card px-6 py-4 md:px-12 flex justify-between items-center">
-    <div class="text-xl font-bold tracking-wider">Sinan.MP</div>
-    <div class="flex items-center gap-3">
-      <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition">Portfolio</a>
-      <a href="works.html" class="text-sm font-medium text-gray-400 hover:text-white transition">All Works</a>
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- LOGIN VIEW -->
+  <div id="loginView" class="flex flex-col justify-center items-center min-h-screen px-4 relative z-10">
+    <div class="glass-card w-full max-w-[440px] p-10">
+      <div class="text-center mb-6">
+        <div class="text-[22px] font-bold tracking-[1px] mb-2">SINAN<span class="text-[#00E676]">.MP</span></div>
+        <h1 class="text-[24px] font-bold mb-2">Admin Panel</h1>
+        <p class="text-[#94A3B8] text-[13px] leading-relaxed">Admin edits are stored in Realtime Database.</p>
+      </div>
+      <form onsubmit="event.preventDefault();">
+        <div class="form-group">
+          <label class="field-label">Admin Email</label>
+          <div class="input-wrapper">
+            <input id="username" type="email" placeholder="Enter email" required autocomplete="email">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Admin Password</label>
+          <div class="input-wrapper">
+            <input id="password" type="password" placeholder="Enter password" required autocomplete="current-password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-7">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('username').value='';document.getElementById('password').value='';">Clear</button>
+          <button type="submit" id="loginBtn" class="btn btn-primary">Login <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </form>
     </div>
-  </nav>
+  </div>
 
-  <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
-
-    <section class="mb-10">
-      <div class="glass-card rounded-2xl p-6">
-        <h1 class="text-3xl font-bold">Admin Panel</h1>
-        <p class="text-gray-400 mt-2 text-sm">Manage Work, Categories, and Testimonials via Firebase.</p>
+  <!-- ADMIN PANEL VIEW -->
+  <div id="panelView" class="hidden min-h-screen">
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 md:px-12 flex justify-between items-center glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
+      <div class="text-[18px] font-bold tracking-[1px]">SINAN<span class="text-[#00E676]">.MP</span></div>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">Portfolio</a>
+        <a href="works.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">All Works</a>
+        <span id="userLabel" class="text-[13px] text-[#94A3B8] hidden md:inline"></span>
+        <button id="logoutBtn" class="btn-sm btn-dark">Logout</button>
       </div>
-    </section>
+    </nav>
 
-    <section id="authSection" class="glass-card rounded-2xl p-6">
-      <h2 class="text-xl font-semibold mb-4">Login</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-        <div class="space-y-4">
-          <div>
-            <div class="field-label mb-1">Admin Username</div>
-            <input id="username" type="email" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter email" />
-          </div>
-          <div>
-            <div class="field-label mb-1">Admin Password</div>
-            <input id="password" type="password" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-purple-500/70" placeholder="Enter password" />
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <button id="loginBtn" class="bg-white text-black font-semibold px-6 py-3 rounded-xl hover:bg-gray-200 transition w-full">Login</button>
-          <button id="clearBtn" class="bg-zinc-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-zinc-800 transition w-full">Clear</button>
-        </div>
+    <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
+      <div class="glass-card rounded-2xl p-8 mb-8">
+        <h1 class="text-[22px] font-bold mb-1">Admin Panel</h1>
+        <p class="text-[#94A3B8] text-[13px]">Manage Work, Categories, and Testimonials via Firebase.</p>
       </div>
-      <p class="text-gray-500 text-xs mt-4">Demo: <span class="text-gray-300 font-mono">mpsinanomr@gmail.com</span> / <span class="text-gray-300 font-mono">Getintopc@123</span></p>
-    </section>
-
-    <section id="panelSection" class="hidden">
-      <section class="glass-card rounded-2xl p-6 mb-8">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h2 class="text-xl font-semibold">Admin Panel</h2>
-            <p class="text-gray-400 text-sm mt-1">Logged in as <span id="authedUsername" class="text-gray-200 font-medium">&nbsp;</span></p>
-          </div>
-          <button id="logoutBtn" class="text-sm px-4 py-2 rounded-xl border border-zinc-800 hover:border-purple-500/40 transition">Logout</button>
-        </div>
-      </section>
 
       <div class="flex items-center gap-2 mb-8 flex-wrap">
         <button class="tab-btn active" data-tab="work">Work</button>
@@ -86,45 +144,45 @@
       </div>
 
       <div id="tab-work" class="tab-content">
-        <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="glass-card rounded-2xl p-6 mb-8">
           <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
             <div>
-              <h2 class="text-xl font-semibold">Work Management</h2>
-              <p class="text-gray-400 text-sm mt-1">All fields save to Firebase</p>
+              <h2 class="text-[18px] font-bold">Work Management</h2>
+              <p class="text-[#94A3B8] text-[13px] mt-1">All fields save to Firebase</p>
             </div>
-            <button id="addWorkBtn" class="bg-purpleGlow text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition">Add Work</button>
+            <button id="addWorkBtn" class="btn-sm btn-green">Add Work</button>
           </div>
           <div id="workList" class="space-y-4"></div>
-        </section>
+        </div>
       </div>
 
       <div id="tab-categories" class="tab-content hidden">
-        <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="glass-card rounded-2xl p-6 mb-8">
           <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
             <div>
-              <h2 class="text-xl font-semibold">Category Management</h2>
-              <p class="text-gray-400 text-sm mt-1">Categories appear as filter buttons</p>
+              <h2 class="text-[18px] font-bold">Category Management</h2>
+              <p class="text-[#94A3B8] text-[13px] mt-1">Categories appear as filter buttons</p>
             </div>
-            <button id="addCatBtn" class="bg-purpleGlow text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition">Add Category</button>
+            <button id="addCatBtn" class="btn-sm btn-green">Add Category</button>
           </div>
           <div id="catList" class="space-y-4"></div>
-        </section>
+        </div>
       </div>
 
       <div id="tab-testimonials" class="tab-content hidden">
-        <section class="glass-card rounded-2xl p-6 mb-8">
+        <div class="glass-card rounded-2xl p-6 mb-8">
           <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
             <div>
-              <h2 class="text-xl font-semibold">Testimonials</h2>
-              <p class="text-gray-400 text-sm mt-1">Client reviews loaded from Firebase</p>
+              <h2 class="text-[18px] font-bold">Testimonials</h2>
+              <p class="text-[#94A3B8] text-[13px] mt-1">Client reviews loaded from Firebase</p>
             </div>
-            <button id="addTestBtn" class="bg-purpleGlow text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition">Add Testimonial</button>
+            <button id="addTestBtn" class="btn-sm btn-green">Add Testimonial</button>
           </div>
           <div id="testList" class="space-y-4"></div>
-        </section>
+        </div>
       </div>
-    </section>
-  </main>
+    </main>
+  </div>
 
   <script type="module">
     import { auth, rtdb, RTDB_PATHS } from './js/firebase-config.js';
@@ -132,9 +190,7 @@
     import { ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
     import { watchRtdb } from './js/firebase-config.js';
 
-    const STORAGE_KEYS = { authed: 'ajzal_admin_authed_v1', username: 'ajzal_admin_username_v1' };
-    const ADMIN_CRED = { username: 'mpsinanomr@gmail.com', password: 'Getintopc@123' };
-
+    const STORAGE_KEY = 'ajzal_admin_v1';
     const DEFAULT_CATEGORIES = [{ name: 'Video Editing', order: 1 }, { name: 'Motion Graphics', order: 2 }, { name: 'Brand Design', order: 3 }];
     const DEFAULT_VIDEOS = [{ title: 'Cinematic Reel', category: 'Video Editing', youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', featured: true, order: 1 }];
     const DEFAULT_TESTIMONIALS = [{ quote: 'Amazing work!', name: 'Client A', role: 'Director', avatar: '' }];
@@ -144,24 +200,56 @@
     let testimonialsCache = [];
 
     function setAuthed(v, u) {
-      if (v) { localStorage.setItem(STORAGE_KEYS.authed, '1'); if (u) localStorage.setItem(STORAGE_KEYS.username, u); }
-      else { localStorage.removeItem(STORAGE_KEYS.authed); localStorage.removeItem(STORAGE_KEYS.username); }
+      if (v) { localStorage.setItem(STORAGE_KEY, JSON.stringify({ authed: true, user: u })); }
+      else { localStorage.removeItem(STORAGE_KEY); }
     }
-    function isAuthed() { return localStorage.getItem(STORAGE_KEYS.authed) === '1'; }
-    function getAuthedUsername() { return localStorage.getItem(STORAGE_KEYS.username) || ''; }
+    function isAuthed() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      try { return JSON.parse(raw).authed === true; } catch { return false; }
+    }
+    function getAuthedUser() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return '';
+      try { return JSON.parse(raw).user || ''; } catch { return ''; }
+    }
     async function savePath(path, items) { await set(ref(rtdb, path), items); }
 
-    function showAuth() { document.getElementById('authSection').classList.remove('hidden'); document.getElementById('panelSection').classList.add('hidden'); }
-    function showPanel() { document.getElementById('authSection').classList.add('hidden'); document.getElementById('panelSection').classList.remove('hidden'); document.getElementById('authedUsername').textContent = getAuthedUsername(); }
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.toggle('error', !!isError);
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3000);
+    }
+
+    function showLogin() {
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('loginView').classList.add('flex');
+      document.getElementById('panelView').classList.add('hidden');
+    }
+    function showPanel() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('flex');
+      document.getElementById('panelView').classList.remove('hidden');
+      const u = getAuthedUser();
+      document.getElementById('userLabel').textContent = u ? 'Logged in as ' + u : '';
+    }
 
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value.trim();
-      if (u !== ADMIN_CRED.username || p !== ADMIN_CRED.password) { alert('Wrong credentials'); return; }
-      try { await signInWithEmailAndPassword(auth, u, p); setAuthed(true, u); showPanel(); } catch (e) { alert('Firebase login failed. ' + e.message); }
+      const p = document.getElementById('password').value;
+      if (!u || !p) { showToast('Please enter email and password', true); return; }
+      try {
+        await signInWithEmailAndPassword(auth, u, p);
+        setAuthed(true, u);
+        showPanel();
+        showToast('Logged in successfully');
+      } catch (e) {
+        showToast('Login failed: ' + (e.message || 'Invalid credentials'), true);
+      }
     });
-    document.getElementById('clearBtn').addEventListener('click', () => { setAuthed(false); location.reload(); });
-    document.getElementById('logoutBtn').addEventListener('click', () => { setAuthed(false); showAuth(); });
+    document.getElementById('logoutBtn').addEventListener('click', () => { setAuthed(false); showLogin(); showToast('Logged out'); });
 
     // Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -174,32 +262,31 @@
       });
     });
 
-    // Render helpers
     function esc(s) { return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
 
     function renderWork() {
       const root = document.getElementById('workList');
       root.innerHTML = '';
+      if (videosCache.length === 0) { root.innerHTML = '<div class="text-[#94A3B8] text-[13px] py-4">No work items yet. Click Add Work to create one.</div>'; return; }
       videosCache.forEach((v, idx) => {
         const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-white/5 bg-white/[0.02]';
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
         const catOptions = categoriesCache.map(c => `<option value="${esc(c.name)}" ${c.name === v.category ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
         row.innerHTML = `
-          <div class="md:col-span-3"><div class="field-label mb-1">Title</div><input data-w="title" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(v.title)}" /></div>
-          <div class="md:col-span-2"><div class="field-label mb-1">Category</div><select data-w="category" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm text-white">${catOptions}</select></div>
-          <div class="md:col-span-3"><div class="field-label mb-1">YouTube URL</div><input data-w="youtubeUrl" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(v.youtubeUrl)}" /></div>
-          <div class="md:col-span-1"><div class="field-label mb-1">Order</div><input data-w="order" data-i="${idx}" type="number" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(String(v.order ?? 0))}" /></div>
-          <div class="md:col-span-1 flex items-center gap-2 pb-2"><input data-w="featured" data-i="${idx}" type="checkbox" ${v.featured ? 'checked' : ''} class="w-4 h-4 accent-purple-600" /><span class="text-xs text-gray-400">Featured</span></div>
-          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-work="${idx}" class="btn-sm bg-zinc-900 text-white hover:bg-red-900 transition">Remove</button><button data-save-work="${idx}" class="btn-sm bg-white text-black hover:bg-gray-200 transition">Save</button></div>
+          <div class="md:col-span-3"><div class="field-label">Title</div><input data-w="title" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(v.title)}" /></div>
+          <div class="md:col-span-2"><div class="field-label">Category</div><select data-w="category" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white">${catOptions}</select></div>
+          <div class="md:col-span-3"><div class="field-label">YouTube URL</div><input data-w="youtubeUrl" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(v.youtubeUrl)}" /></div>
+          <div class="md:col-span-1"><div class="field-label">Order</div><input data-w="order" data-i="${idx}" type="number" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(String(v.order ?? 0))}" /></div>
+          <div class="md:col-span-1 flex items-center gap-2 pb-2"><input data-w="featured" data-i="${idx}" type="checkbox" ${v.featured ? 'checked' : ''} class="w-4 h-4 accent-[#00E676]" /><span class="text-[12px] text-[#94A3B8]">Featured</span></div>
+          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-work="${idx}" class="btn-sm btn-red">Remove</button><button data-save-work="${idx}" class="btn-sm btn-green">Save</button></div>
         `;
         root.appendChild(row);
       });
-      // Bind events
       root.querySelectorAll('[data-w]').forEach(el => {
         el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-w'); const val = el.type === 'checkbox' ? el.checked : el.value; videosCache[idx][field] = val; });
       });
       root.querySelectorAll('[data-save-work]').forEach(btn => {
-        btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-save-work')); await savePath(RTDB_PATHS.videos, videosCache); btn.textContent = 'Saved'; setTimeout(() => btn.textContent = 'Save', 1200); });
+        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.videos, videosCache); showToast('Work saved'); });
       });
       root.querySelectorAll('[data-rm-work]').forEach(btn => {
         btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-work')); if (!confirm('Remove this work item?')) return; videosCache.splice(idx, 1); await savePath(RTDB_PATHS.videos, videosCache); });
@@ -209,13 +296,14 @@
     function renderCategories() {
       const root = document.getElementById('catList');
       root.innerHTML = '';
+      if (categoriesCache.length === 0) { root.innerHTML = '<div class="text-[#94A3B8] text-[13px] py-4">No categories yet. Click Add Category to create one.</div>'; return; }
       categoriesCache.forEach((c, idx) => {
         const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-white/5 bg-white/[0.02]';
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
         row.innerHTML = `
-          <div class="md:col-span-5"><div class="field-label mb-1">Name</div><input data-c="name" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(c.name)}" /></div>
-          <div class="md:col-span-3"><div class="field-label mb-1">Order</div><input data-c="order" data-i="${idx}" type="number" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(String(c.order ?? 0))}" /></div>
-          <div class="md:col-span-4 flex gap-2 justify-end"><button data-rm-cat="${idx}" class="btn-sm bg-zinc-900 text-white hover:bg-red-900 transition">Remove</button><button data-save-cat="${idx}" class="btn-sm bg-white text-black hover:bg-gray-200 transition">Save</button></div>
+          <div class="md:col-span-5"><div class="field-label">Name</div><input data-c="name" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(c.name)}" /></div>
+          <div class="md:col-span-3"><div class="field-label">Order</div><input data-c="order" data-i="${idx}" type="number" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(String(c.order ?? 0))}" /></div>
+          <div class="md:col-span-4 flex gap-2 justify-end"><button data-rm-cat="${idx}" class="btn-sm btn-red">Remove</button><button data-save-cat="${idx}" class="btn-sm btn-green">Save</button></div>
         `;
         root.appendChild(row);
       });
@@ -223,7 +311,7 @@
         el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-c'); const val = field === 'order' ? parseInt(el.value || '0', 10) : el.value; categoriesCache[idx][field] = val; });
       });
       root.querySelectorAll('[data-save-cat]').forEach(btn => {
-        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.categories, categoriesCache); btn.textContent = 'Saved'; setTimeout(() => btn.textContent = 'Save', 1200); });
+        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.categories, categoriesCache); showToast('Categories saved'); });
       });
       root.querySelectorAll('[data-rm-cat]').forEach(btn => {
         btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-cat')); if (!confirm('Remove this category?')) return; categoriesCache.splice(idx, 1); await savePath(RTDB_PATHS.categories, categoriesCache); });
@@ -233,15 +321,16 @@
     function renderTestimonials() {
       const root = document.getElementById('testList');
       root.innerHTML = '';
+      if (testimonialsCache.length === 0) { root.innerHTML = '<div class="text-[#94A3B8] text-[13px] py-4">No testimonials yet. Click Add Testimonial to create one.</div>'; return; }
       testimonialsCache.forEach((t, idx) => {
         const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-white/5 bg-white/[0.02]';
+        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
         row.innerHTML = `
-          <div class="md:col-span-4"><div class="field-label mb-1">Name</div><input data-t="name" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(t.name)}" /></div>
-          <div class="md:col-span-3"><div class="field-label mb-1">Role</div><input data-t="role" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(t.role)}" /></div>
-          <div class="md:col-span-3"><div class="field-label mb-1">Avatar URL</div><input data-t="avatar" data-i="${idx}" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm" value="${esc(t.avatar || '')}" placeholder="https://..." /></div>
-          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-test="${idx}" class="btn-sm bg-zinc-900 text-white hover:bg-red-900 transition">Remove</button><button data-save-test="${idx}" class="btn-sm bg-white text-black hover:bg-gray-200 transition">Save</button></div>
-          <div class="md:col-span-12"><div class="field-label mb-1">Quote</div><textarea data-t="quote" data-i="${idx}" rows="2" class="w-full bg-zinc-950/70 border border-zinc-800 rounded-xl px-3 py-2.5 outline-none focus:border-purple-500/70 text-sm">${esc(t.quote)}</textarea></div>
+          <div class="md:col-span-4"><div class="field-label">Name</div><input data-t="name" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.name)}" /></div>
+          <div class="md:col-span-3"><div class="field-label">Role</div><input data-t="role" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.role)}" /></div>
+          <div class="md:col-span-3"><div class="field-label">Avatar URL</div><input data-t="avatar" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.avatar || '')}" placeholder="https://..." /></div>
+          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-test="${idx}" class="btn-sm btn-red">Remove</button><button data-save-test="${idx}" class="btn-sm btn-green">Save</button></div>
+          <div class="md:col-span-12"><div class="field-label">Quote</div><textarea data-t="quote" data-i="${idx}" rows="2" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white">${esc(t.quote)}</textarea></div>
         `;
         root.appendChild(row);
       });
@@ -249,14 +338,13 @@
         el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-t'); testimonialsCache[idx][field] = el.value; });
       });
       root.querySelectorAll('[data-save-test]').forEach(btn => {
-        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.testimonials, testimonialsCache); btn.textContent = 'Saved'; setTimeout(() => btn.textContent = 'Save', 1200); });
+        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.testimonials, testimonialsCache); showToast('Testimonials saved'); });
       });
       root.querySelectorAll('[data-rm-test]').forEach(btn => {
         btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-test')); if (!confirm('Remove this testimonial?')) return; testimonialsCache.splice(idx, 1); await savePath(RTDB_PATHS.testimonials, testimonialsCache); });
       });
     }
 
-    // Add buttons
     document.getElementById('addWorkBtn').addEventListener('click', async () => {
       const cat = categoriesCache[0]?.name || 'General';
       videosCache.push({ title: 'New Work', category: cat, youtubeUrl: '', featured: false, order: videosCache.length + 1 });
@@ -271,13 +359,12 @@
       await savePath(RTDB_PATHS.testimonials, testimonialsCache);
     });
 
-    // Real-time watchers
     watchRtdb(RTDB_PATHS.categories, (data) => { categoriesCache = data; renderCategories(); renderWork(); }, DEFAULT_CATEGORIES);
     watchRtdb(RTDB_PATHS.videos, (data) => { videosCache = data; renderWork(); }, DEFAULT_VIDEOS);
     watchRtdb(RTDB_PATHS.testimonials, (data) => { testimonialsCache = data; renderTestimonials(); }, DEFAULT_TESTIMONIALS);
 
     if (isAuthed()) showPanel();
-    else showAuth();
+    else showLogin();
   </script>
 </body>
 </html>

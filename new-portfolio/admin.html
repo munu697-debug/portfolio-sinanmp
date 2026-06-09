@@ -82,6 +82,7 @@
     .form-group { margin-bottom: 20px; }
     .toast { position: fixed; top: 24px; right: 24px; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: #00E676; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 100; transition: opacity 0.3s; }
     .toast.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
+    #admin-mobile-menu { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
   </style>
 </head>
 <body class="antialiased">
@@ -123,13 +124,24 @@
   <div id="panelView" class="hidden min-h-screen">
     <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 md:px-12 flex justify-between items-center glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
       <div class="text-[18px] font-bold tracking-[1px]">SINAN<span class="text-[#00E676]">.MP</span></div>
-      <div class="flex items-center gap-3">
+      <div class="hidden md:flex items-center gap-3">
         <a href="index.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">Portfolio</a>
         <a href="works.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">All Works</a>
-        <span id="userLabel" class="text-[13px] text-[#94A3B8] hidden md:inline"></span>
+        <span id="userLabel" class="text-[13px] text-[#94A3B8]"></span>
         <button id="logoutBtn" class="btn-sm btn-dark">Logout</button>
       </div>
+      <button id="admin-menu-btn" class="block md:hidden text-[#94A3B8] hover:text-white focus:outline-none z-50" aria-label="Toggle Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="admin-menu-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
     </nav>
+    <div id="admin-mobile-menu" class="fixed inset-0 bg-[#0B0813]/98 backdrop-blur-2xl flex flex-col justify-center items-center space-y-8 text-2xl font-light text-[#94A3B8] translate-x-full md:hidden z-40">
+      <a href="index.html" class="hover:text-white transition duration-200">Portfolio</a>
+      <a href="works.html" class="hover:text-white transition duration-200">All Works</a>
+      <span id="mobileUserLabel" class="text-[#94A3B8] text-lg"></span>
+      <button id="mobileLogoutBtn" class="btn-sm btn-dark text-lg px-6 py-3">Logout</button>
+    </div>
 
     <main class="pt-24 px-4 md:px-12 max-w-6xl mx-auto pb-20">
       <div class="glass-card rounded-2xl p-8 mb-8">
@@ -233,7 +245,10 @@
       document.getElementById('loginView').classList.remove('flex');
       document.getElementById('panelView').classList.remove('hidden');
       const u = getAuthedUser();
-      document.getElementById('userLabel').textContent = u ? 'Logged in as ' + u : '';
+      const label = u ? 'Logged in as ' + u : '';
+      document.getElementById('userLabel').textContent = label;
+      const mobileLabel = document.getElementById('mobileUserLabel');
+      if (mobileLabel) mobileLabel.textContent = label;
     }
 
     document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -250,6 +265,31 @@
       }
     });
     document.getElementById('logoutBtn').addEventListener('click', () => { setAuthed(false); showLogin(); showToast('Logged out'); });
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', () => { setAuthed(false); showLogin(); showToast('Logged out'); });
+
+    // Mobile menu
+    (function() {
+      const menuBtn = document.getElementById('admin-menu-btn');
+      const menuIcon = document.getElementById('admin-menu-icon');
+      const mobileMenu = document.getElementById('admin-mobile-menu');
+      if (!menuBtn || !mobileMenu) return;
+      const links = mobileMenu.querySelectorAll('a, button');
+      function close() {
+        mobileMenu.classList.add('translate-x-full');
+        if (menuIcon) menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />';
+        document.body.classList.remove('overflow-hidden');
+      }
+      menuBtn.addEventListener('click', () => {
+        const isClosed = mobileMenu.classList.contains('translate-x-full');
+        if (isClosed) {
+          mobileMenu.classList.remove('translate-x-full');
+          if (menuIcon) menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+          document.body.classList.add('overflow-hidden');
+        } else { close(); }
+      });
+      links.forEach(l => l.addEventListener('click', close));
+    })();
 
     // Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {

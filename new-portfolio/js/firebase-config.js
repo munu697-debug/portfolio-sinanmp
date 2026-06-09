@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAl249CClqKC109FG2zGIcQnrgTtnHDLuU",
@@ -15,7 +14,29 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
 export const rtdb = getDatabase(app);
-export const storage = getStorage(app);
+
+export function watchRtdb(path, callback, fallback) {
+  const dbRef = ref(rtdb, path);
+  return onValue(dbRef, (snap) => {
+    if (!snap.exists()) { callback(fallback); return; }
+    const data = snap.val();
+    if (Array.isArray(data)) { callback(data); return; }
+    if (typeof data === 'object' && data !== null) {
+      const items = Object.values(data);
+      callback(items.length ? items : fallback);
+      return;
+    }
+    callback(fallback);
+  }, (err) => {
+    console.error("RTDB error:", err);
+    callback(fallback);
+  });
+}
+
+export const RTDB_PATHS = {
+  categories: '/categories/current/items',
+  videos: '/videos/current/items',
+  testimonials: '/testimonials/current/items'
+};

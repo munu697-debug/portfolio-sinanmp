@@ -1,0 +1,200 @@
+Update the entire Portfolio Website, Admin Panel, and Firebase integration according to the following requirements.
+
+## General Requirements
+
+* Remove all hardcoded Work items, Categories, Videos, and Testimonials from the website.
+* The website must display only data that is stored in Firebase Realtime Database.
+* Use Firebase Realtime Database only.
+* The website should automatically update whenever content is added, edited, or removed through the Admin Panel.
+
+---
+
+## Admin Panel
+
+Keep only the following content management sections:
+
+1. Work Management
+2. Category Management
+3. Testimonials Management
+
+Remove any unnecessary content sections.
+
+### Admin Panel Style
+
+* Use inline editing only.
+* Use Add and Remove buttons.
+* No separate Edit/Save/Cancel modal system.
+* Keep the interface simple and clean.
+
+---
+
+## Category Management
+
+Allow administrators to:
+
+* Add categories
+* Edit categories
+* Delete categories
+* Reorder categories using the order field
+
+Store categories in:
+
+/categories/current/items
+
+Each category object:
+
+```json
+{
+  "name": "Web Development",
+  "order": 1
+}
+```
+
+Categories should automatically appear as filter buttons on the frontend.
+
+---
+
+## Work / Video Management
+
+Each work item should contain only:
+
+* Title
+* Category
+* YouTube URL
+* Featured (true/false)
+* Order
+
+Do not include:
+
+* Image upload
+* Thumbnail upload
+* Description field
+* Gallery fields
+
+Store videos in:
+
+/videos/current/items
+
+Example:
+
+```json
+{
+  "title": "Portfolio Website",
+  "category": "Web Development",
+  "youtubeUrl": "https://www.youtube.com/watch?v=xxxxx",
+  "featured": true,
+  "order": 1
+}
+```
+
+Allow administrators to:
+
+* Add work items
+* Edit work items
+* Remove work items
+* Select category
+* Mark work items as Featured
+* Change display order
+
+Videos should be displayed using only the YouTube URL.
+
+---
+
+## Testimonials Management
+
+Keep the existing testimonial functionality but:
+
+* Load testimonials only from Firebase
+* Remove all hardcoded testimonials
+
+Store testimonials in:
+
+/testimonials/current/items
+
+---
+
+## Home Page (index.html)
+
+### Work Section
+
+Display only the most important work items.
+
+Rules:
+
+* Show up to 3 featured work items.
+* If fewer than 3 items are marked as featured, show the first 3 items based on the order field.
+* Embed YouTube videos directly.
+* Do not display all work items on the homepage.
+
+Add a button:
+
+"View All Works"
+
+When clicked:
+
+* Redirect to works.html
+
+---
+
+## Works Page (works.html)
+
+Create a dedicated page for all portfolio work.
+
+Requirements:
+
+* Load all work items from Firebase.
+* Display category filter buttons dynamically from Firebase categories.
+* Allow users to filter projects by category.
+* Display all YouTube video projects.
+* Sort projects by the order field.
+* Show videos as embedded YouTube players.
+
+Example:
+
+All | Web Development | UI/UX | Graphic Design | Video Editing
+
+When a category is selected, only videos belonging to that category should be displayed.
+
+---
+
+## Navigation
+
+Navigation structure:
+
+* Home → index.html
+* All Works → works.html
+
+The homepage Work section and View All Works button must redirect users to works.html.
+
+---
+
+## Firebase Realtime Database Structure
+
+```text
+/categories/current/items
+/videos/current/items
+/testimonials/current/items
+```
+
+Category Example:
+
+```json
+{
+  "name": "Web Development",
+  "order": 1
+}
+```
+
+Video Example:
+
+```json
+{
+  "title": "Portfolio Website",
+  "category": "Web Development",
+  "youtubeUrl": "https://www.youtube.com/watch?v=xxxxx",
+  "featured": true,
+  "order": 1
+}
+```
+
+The final system should function as a fully dynamic portfolio where all categories, videos, featured projects, and testimonials are managed through the Admin Panel and stored in Firebase Realtime Database, with no hardcoded content anywhere in the website.

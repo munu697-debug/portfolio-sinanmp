@@ -153,6 +153,7 @@
         <button class="tab-btn active" data-tab="work">Work</button>
         <button class="tab-btn" data-tab="categories">Categories</button>
         <button class="tab-btn" data-tab="testimonials">Testimonials</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
       </div>
 
       <div id="tab-work" class="tab-content">
@@ -193,12 +194,49 @@
           <div id="testList" class="space-y-4"></div>
         </div>
       </div>
+
+      <div id="tab-settings" class="tab-content hidden">
+        <div class="glass-card rounded-2xl p-6 mb-8">
+          <div class="mb-6">
+            <h2 class="text-[18px] font-bold">Account Settings</h2>
+            <p class="text-[#94A3B8] text-[13px] mt-1">Update your admin password</p>
+          </div>
+          <div class="max-w-md">
+            <form onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label class="field-label">Current Password</label>
+                <div class="input-wrapper">
+                  <input id="currentPassword" type="password" placeholder="Enter current password" required>
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="field-label">New Password</label>
+                <div class="input-wrapper">
+                  <input id="newPassword" type="password" placeholder="Enter new password (min 6 chars)" required>
+                  <i class="fa-solid fa-key"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Confirm New Password</label>
+                <div class="input-wrapper">
+                  <input id="confirmPassword" type="password" placeholder="Confirm new password" required>
+                  <i class="fa-solid fa-check-circle"></i>
+                </div>
+              </div>
+              <div class="flex gap-3 mt-4">
+                <button type="button" id="changePasswordBtn" class="btn btn-primary">Update Password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
   <script type="module">
     import { auth, rtdb, RTDB_PATHS } from './js/firebase-config.js';
-    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import { ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
     import { watchRtdb } from './js/firebase-config.js';
 
@@ -397,6 +435,48 @@
     document.getElementById('addTestBtn').addEventListener('click', async () => {
       testimonialsCache.push({ quote: 'New testimonial', name: 'Name', role: 'Role', avatar: '' });
       await savePath(RTDB_PATHS.testimonials, testimonialsCache);
+    });
+
+    // Password change
+    document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+      const currentPw = document.getElementById('currentPassword').value;
+      const newPw = document.getElementById('newPassword').value;
+      const confirmPw = document.getElementById('confirmPassword').value;
+
+      if (!currentPw || !newPw || !confirmPw) {
+        showToast('Please fill all password fields', true);
+        return;
+      }
+      if (newPw.length < 6) {
+        showToast('New password must be at least 6 characters', true);
+        return;
+      }
+      if (newPw !== confirmPw) {
+        showToast('New passwords do not match', true);
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showToast('You must be logged in to change password', true);
+        return;
+      }
+
+      try {
+        const credential = EmailAuthProvider.credential(user.email, currentPw);
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, newPw);
+        showToast('Password updated successfully');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      } catch (e) {
+        let msg = e.message || 'Failed to update password';
+        if (msg.includes('auth/wrong-password')) msg = 'Current password is incorrect';
+        if (msg.includes('auth/requires-recent-login')) msg = 'Please log out and log back in to change password';
+        if (msg.includes('auth/weak-password')) msg = 'Password is too weak (min 6 chars)';
+        showToast(msg, true);
+      }
     });
 
     watchRtdb(RTDB_PATHS.categories, (data) => { categoriesCache = data; renderCategories(); renderWork(); }, DEFAULT_CATEGORIES);

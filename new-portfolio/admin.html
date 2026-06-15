@@ -206,21 +206,21 @@
               <div class="form-group">
                 <label class="field-label">Current Password</label>
                 <div class="input-wrapper">
-                  <input id="currentPassword" type="password" placeholder="Enter current password" required>
+                  <input id="currentPassword" type="password" placeholder="Enter current password" required autocomplete="current-password">
                   <i class="fa-solid fa-lock"></i>
                 </div>
               </div>
               <div class="form-group">
                 <label class="field-label">New Password</label>
                 <div class="input-wrapper">
-                  <input id="newPassword" type="password" placeholder="Enter new password (min 6 chars)" required>
+                  <input id="newPassword" type="password" placeholder="Enter new password (min 6 chars)" required autocomplete="new-password">
                   <i class="fa-solid fa-key"></i>
                 </div>
               </div>
               <div class="form-group">
                 <label class="field-label">Confirm New Password</label>
                 <div class="input-wrapper">
-                  <input id="confirmPassword" type="password" placeholder="Confirm new password" required>
+                  <input id="confirmPassword" type="password" placeholder="Confirm new password" required autocomplete="new-password">
                   <i class="fa-solid fa-check-circle"></i>
                 </div>
               </div>
@@ -235,10 +235,10 @@
   </div>
 
   <script type="module">
-    import { auth, rtdb, RTDB_PATHS } from './js/firebase-config.js';
+    import { auth, rtdb, RTDB_PATHS } from '/js/firebase-config.js';
     import { signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import { ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-    import { watchRtdb } from './js/firebase-config.js';
+    import { watchRtdb } from '/js/firebase-config.js';
 
     const STORAGE_KEY = 'ajzal_admin_v1';
     const DEFAULT_CATEGORIES = [{ name: 'Video Editing', order: 1 }, { name: 'Motion Graphics', order: 2 }, { name: 'Brand Design', order: 3 }];

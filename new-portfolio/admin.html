@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin | Sinan MP</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -342,6 +342,27 @@
 
     function esc(s) { return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
 
+    function makeInput(type, cls, value, dataset, placeholder) {
+      const el = document.createElement('input');
+      el.type = type;
+      el.className = cls;
+      if (value !== undefined) el.value = value;
+      if (placeholder) el.placeholder = placeholder;
+      for (const k in dataset) el.setAttribute(k, dataset[k]);
+      return el;
+    }
+    function makeLabel(text) {
+      const el = document.createElement('div');
+      el.className = 'field-label';
+      el.textContent = text;
+      return el;
+    }
+    function makeCol(cls, children) {
+      const el = document.createElement('div');
+      el.className = cls;
+      children.forEach(c => el.appendChild(c));
+      return el;
+    }
     function renderWork() {
       const root = document.getElementById('workList');
       root.innerHTML = '';
@@ -349,15 +370,36 @@
       videosCache.forEach((v, idx) => {
         const row = document.createElement('div');
         row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
-        const catOptions = categoriesCache.map(c => `<option value="${esc(c.name)}" ${c.name === v.category ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
-        row.innerHTML = `
-          <div class="md:col-span-3"><div class="field-label">Title</div><input data-w="title" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(v.title)}" /></div>
-          <div class="md:col-span-2"><div class="field-label">Category</div><select data-w="category" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white">${catOptions}</select></div>
-          <div class="md:col-span-3"><div class="field-label">YouTube URL</div><input data-w="youtubeUrl" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(v.youtubeUrl)}" /></div>
-          <div class="md:col-span-1"><div class="field-label">Order</div><input data-w="order" data-i="${idx}" type="number" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(String(v.order ?? 0))}" /></div>
-          <div class="md:col-span-1 flex items-center gap-2 pb-2"><input data-w="featured" data-i="${idx}" type="checkbox" ${v.featured ? 'checked' : ''} class="w-4 h-4 accent-[#00E676]" /><span class="text-[12px] text-[#94A3B8]">Featured</span></div>
-          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-work="${idx}" class="btn-sm btn-red">Remove</button><button data-save-work="${idx}" class="btn-sm btn-green">Save</button></div>
-        `;
+        const sel = document.createElement('select');
+        sel.className = 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white';
+        sel.setAttribute('data-w', 'category'); sel.setAttribute('data-i', String(idx));
+        categoriesCache.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.name; opt.textContent = c.name;
+          if (c.name === v.category) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        const inTitle = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', v.title, { 'data-w': 'title', 'data-i': String(idx) });
+        const inUrl = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', v.youtubeUrl, { 'data-w': 'youtubeUrl', 'data-i': String(idx) });
+        const inOrder = makeInput('number', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', String(v.order ?? 0), { 'data-w': 'order', 'data-i': String(idx) });
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.className = 'w-4 h-4 accent-[#00E676]';
+        cb.setAttribute('data-w', 'featured'); cb.setAttribute('data-i', String(idx));
+        cb.checked = !!v.featured;
+        const span = document.createElement('span');
+        span.className = 'text-[12px] text-[#94A3B8]'; span.textContent = 'Featured';
+        const btnRm = document.createElement('button');
+        btnRm.className = 'btn-sm btn-red'; btnRm.textContent = 'Remove'; btnRm.setAttribute('data-rm-work', String(idx));
+        const btnSave = document.createElement('button');
+        btnSave.className = 'btn-sm btn-green'; btnSave.textContent = 'Save'; btnSave.setAttribute('data-save-work', String(idx));
+        row.appendChild(makeCol('md:col-span-3', [makeLabel('Title'), inTitle]));
+        row.appendChild(makeCol('md:col-span-2', [makeLabel('Category'), sel]));
+        row.appendChild(makeCol('md:col-span-3', [makeLabel('YouTube URL'), inUrl]));
+        row.appendChild(makeCol('md:col-span-1', [makeLabel('Order'), inOrder]));
+        const fe = document.createElement('div'); fe.className = 'md:col-span-1 flex items-center gap-2 pb-2';
+        fe.appendChild(cb); fe.appendChild(span); row.appendChild(fe);
+        const btnWrap = document.createElement('div'); btnWrap.className = 'md:col-span-2 flex gap-2 justify-end';
+        btnWrap.appendChild(btnRm); btnWrap.appendChild(btnSave); row.appendChild(btnWrap);
         root.appendChild(row);
       });
       root.querySelectorAll('[data-w]').forEach(el => {
@@ -378,11 +420,14 @@
       categoriesCache.forEach((c, idx) => {
         const row = document.createElement('div');
         row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
-        row.innerHTML = `
-          <div class="md:col-span-5"><div class="field-label">Name</div><input data-c="name" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(c.name)}" /></div>
-          <div class="md:col-span-3"><div class="field-label">Order</div><input data-c="order" data-i="${idx}" type="number" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(String(c.order ?? 0))}" /></div>
-          <div class="md:col-span-4 flex gap-2 justify-end"><button data-rm-cat="${idx}" class="btn-sm btn-red">Remove</button><button data-save-cat="${idx}" class="btn-sm btn-green">Save</button></div>
-        `;
+        const inName = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', c.name, { 'data-c': 'name', 'data-i': String(idx) });
+        const inOrder = makeInput('number', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', String(c.order ?? 0), { 'data-c': 'order', 'data-i': String(idx) });
+        const btnRm = document.createElement('button'); btnRm.className = 'btn-sm btn-red'; btnRm.textContent = 'Remove'; btnRm.setAttribute('data-rm-cat', String(idx));
+        const btnSave = document.createElement('button'); btnSave.className = 'btn-sm btn-green'; btnSave.textContent = 'Save'; btnSave.setAttribute('data-save-cat', String(idx));
+        row.appendChild(makeCol('md:col-span-5', [makeLabel('Name'), inName]));
+        row.appendChild(makeCol('md:col-span-3', [makeLabel('Order'), inOrder]));
+        const btnWrap = document.createElement('div'); btnWrap.className = 'md:col-span-4 flex gap-2 justify-end';
+        btnWrap.appendChild(btnRm); btnWrap.appendChild(btnSave); row.appendChild(btnWrap);
         root.appendChild(row);
       });
       root.querySelectorAll('[data-c]').forEach(el => {
@@ -403,13 +448,20 @@
       testimonialsCache.forEach((t, idx) => {
         const row = document.createElement('div');
         row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
-        row.innerHTML = `
-          <div class="md:col-span-4"><div class="field-label">Name</div><input data-t="name" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.name)}" /></div>
-          <div class="md:col-span-3"><div class="field-label">Role</div><input data-t="role" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.role)}" /></div>
-          <div class="md:col-span-3"><div class="field-label">Avatar URL</div><input data-t="avatar" data-i="${idx}" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white" value="${esc(t.avatar || '')}" placeholder="https://..." /></div>
-          <div class="md:col-span-2 flex gap-2 justify-end"><button data-rm-test="${idx}" class="btn-sm btn-red">Remove</button><button data-save-test="${idx}" class="btn-sm btn-green">Save</button></div>
-          <div class="md:col-span-12"><div class="field-label">Quote</div><textarea data-t="quote" data-i="${idx}" rows="2" class="w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white">${esc(t.quote)}</textarea></div>
-        `;
+        const inName = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', t.name, { 'data-t': 'name', 'data-i': String(idx) });
+        const inRole = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', t.role, { 'data-t': 'role', 'data-i': String(idx) });
+        const inAvatar = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', t.avatar || '', { 'data-t': 'avatar', 'data-i': String(idx) }, 'https://...');
+        const btnRm = document.createElement('button'); btnRm.className = 'btn-sm btn-red'; btnRm.textContent = 'Remove'; btnRm.setAttribute('data-rm-test', String(idx));
+        const btnSave = document.createElement('button'); btnSave.className = 'btn-sm btn-green'; btnSave.textContent = 'Save'; btnSave.setAttribute('data-save-test', String(idx));
+        const ta = document.createElement('textarea');
+        ta.className = 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white';
+        ta.rows = 2; ta.setAttribute('data-t', 'quote'); ta.setAttribute('data-i', String(idx)); ta.value = t.quote;
+        row.appendChild(makeCol('md:col-span-4', [makeLabel('Name'), inName]));
+        row.appendChild(makeCol('md:col-span-3', [makeLabel('Role'), inRole]));
+        row.appendChild(makeCol('md:col-span-3', [makeLabel('Avatar URL'), inAvatar]));
+        const btnWrap = document.createElement('div'); btnWrap.className = 'md:col-span-2 flex gap-2 justify-end';
+        btnWrap.appendChild(btnRm); btnWrap.appendChild(btnSave); row.appendChild(btnWrap);
+        row.appendChild(makeCol('md:col-span-12', [makeLabel('Quote'), ta]));
         root.appendChild(row);
       });
       root.querySelectorAll('[data-t]').forEach(el => {

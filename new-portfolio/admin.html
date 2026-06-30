@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin | Sinan MP</title>
+  <title>Admin | Ajzal M</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -83,6 +83,16 @@
     .toast { position: fixed; top: 24px; right: 24px; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.3); color: #00E676; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 100; transition: opacity 0.3s; }
     .toast.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
     #admin-mobile-menu { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* Preview Video Modal & Thumbnails */
+    #videoModal { display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); backdrop-filter: blur(16px); }
+    #videoModal.open { display: flex; }
+    .vm-inner { position: relative; width: 90vw; max-width: 900px; }
+    .vm-inner.portrait-mode { max-width: 380px; }
+    .vm-ratio { position: relative; padding-top: 56.25%; background: #000; border-radius: 16px; overflow: hidden; }
+    .vm-inner.portrait-mode .vm-ratio { padding-top: 177.78%; }
+    .vm-ratio iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .vm-close { position: absolute; top: -14px; right: -14px; width: 36px; height: 36px; border-radius: 50%; background: rgba(30,30,40,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; transition: background 0.2s; z-index: 10; }
+    .vm-close:hover { background: rgba(239,68,68,0.4); }
   </style>
 </head>
 <body class="antialiased">
@@ -93,11 +103,11 @@
   <div id="loginView" class="flex flex-col justify-center items-center min-h-screen px-4 relative z-10">
     <div class="glass-card w-full max-w-[440px] p-10">
       <div class="text-center mb-6">
-        <div class="text-[22px] font-bold tracking-[1px] mb-2">SINAN<span class="text-[#00E676]">.MP</span></div>
+        <div class="text-[22px] font-bold tracking-[1px] mb-2">AJZAL<span class="text-[#00E676]">.</span>M</div>
         <h1 class="text-[24px] font-bold mb-2">Admin Panel</h1>
         <p class="text-[#94A3B8] text-[13px] leading-relaxed">Admin edits are stored in Realtime Database.</p>
       </div>
-      <form onsubmit="event.preventDefault();">
+      <form id="loginForm">
         <div class="form-group">
           <label class="field-label">Admin Email</label>
           <div class="input-wrapper">
@@ -123,7 +133,7 @@
   <!-- ADMIN PANEL VIEW -->
   <div id="panelView" class="hidden min-h-screen">
     <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 md:px-12 flex justify-between items-center glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
-      <div class="text-[18px] font-bold tracking-[1px]">SINAN<span class="text-[#00E676]">.MP</span></div>
+      <div class="text-[18px] font-bold tracking-[1px]">AJZAL<span class="text-[#00E676]">.</span>M</div>
       <div class="hidden md:flex items-center gap-3">
         <a href="index.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">Portfolio</a>
         <a href="works.html" class="text-[13px] font-medium text-[#94A3B8] hover:text-white transition">All Works</a>
@@ -235,10 +245,9 @@
   </div>
 
   <script type="module">
-    import { auth, rtdb, RTDB_PATHS } from '/js/firebase-config.js';
-    import { signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { auth, rtdb, RTDB_PATHS, watchRtdb } from './js/firebase-config.js';
+    import { signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import { ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-    import { watchRtdb } from '/js/firebase-config.js';
 
     const STORAGE_KEY = 'ajzal_admin_v1';
     const DEFAULT_CATEGORIES = [{ name: 'Video Editing', order: 1 }, { name: 'Motion Graphics', order: 2 }, { name: 'Brand Design', order: 3 }];
@@ -248,6 +257,52 @@
     let categoriesCache = [];
     let videosCache = [];
     let testimonialsCache = [];
+
+    function getVideoInfo(url) {
+      if (!url) return { type: 'unknown', id: null, embedUrl: '', isVertical: false };
+      const igReg = /(?:instagram\.com\/(?:p|reel)\/)([a-zA-Z0-9_-]+)/;
+      const igMatch = url.match(igReg);
+      if (igMatch) {
+        return { type: 'instagram', id: igMatch[1], embedUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed`, isVertical: true };
+      }
+      const ytReg = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+      const ytMatch = url.match(ytReg);
+      if (ytMatch && ytMatch[2].length === 11) {
+        const id = ytMatch[2];
+        const isShort = url.includes('/shorts/');
+        return { type: 'youtube', id, embedUrl: `https://www.youtube.com/embed/${id}`, isVertical: isShort };
+      }
+      return { type: 'unknown', id: null, embedUrl: '', isVertical: false };
+    }
+
+    function openModal(vOrUrl) {
+      const url = typeof vOrUrl === 'string' ? vOrUrl : (vOrUrl.videoUrl || vOrUrl.youtubeUrl);
+      if (!url) return;
+      const info = getVideoInfo(url);
+      if (!info.embedUrl) return;
+      const modal  = document.getElementById('videoModal');
+      const inner  = document.getElementById('vmInner');
+      const frame  = document.getElementById('vmFrame');
+      frame.src = info.embedUrl + '?autoplay=1&rel=0';
+      inner.classList.toggle('portrait-mode', info.isVertical);
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('videoModal');
+      const frame = document.getElementById('vmFrame');
+      modal.style.display = 'none';
+      frame.src = '';
+      document.body.style.overflow = '';
+    }
+
+    // Bind modal elements
+    setTimeout(() => {
+      document.getElementById('vmClose')?.addEventListener('click', closeModal);
+      document.getElementById('videoModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    }, 0);
 
     function setAuthed(v, u) {
       if (v) { localStorage.setItem(STORAGE_KEY, JSON.stringify({ authed: true, user: u })); }
@@ -264,6 +319,19 @@
       try { return JSON.parse(raw).user || ''; } catch { return ''; }
     }
     async function savePath(path, items) { await set(ref(rtdb, path), items); }
+    async function safeSavePath(path, items, successMsg) {
+      try {
+        await savePath(path, items);
+        showToast(successMsg || 'Changes saved successfully');
+      } catch (err) {
+        console.error("Firebase Database Save Error:", err);
+        let msg = err.message || 'Permission denied';
+        if (msg.includes('PERMISSION_DENIED')) {
+          msg = 'Permission denied: Admin credentials expired or unauthorized.';
+        }
+        showToast('Save failed: ' + msg, true);
+      }
+    }
 
     function showToast(msg, isError) {
       const t = document.getElementById('toast');
@@ -289,22 +357,33 @@
       if (mobileLabel) mobileLabel.textContent = label;
     }
 
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-      if (!u || !p) { showToast('Please enter email and password', true); return; }
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+        if (!u || !p) { showToast('Please enter email and password', true); return; }
+        try {
+          await signInWithEmailAndPassword(auth, u, p);
+          showToast('Logged in successfully');
+        } catch (err) {
+          showToast('Login failed: ' + (err.message || 'Invalid credentials'), true);
+        }
+      });
+    }
+
+    async function handleLogout() {
       try {
-        await signInWithEmailAndPassword(auth, u, p);
-        setAuthed(true, u);
-        showPanel();
-        showToast('Logged in successfully');
-      } catch (e) {
-        showToast('Login failed: ' + (e.message || 'Invalid credentials'), true);
+        await auth.signOut();
+        showToast('Logged out');
+      } catch (err) {
+        showToast('Logout failed: ' + err.message, true);
       }
-    });
-    document.getElementById('logoutBtn').addEventListener('click', () => { setAuthed(false); showLogin(); showToast('Logged out'); });
+    }
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', () => { setAuthed(false); showLogin(); showToast('Logged out'); });
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', handleLogout);
 
     // Mobile menu
     (function() {
@@ -363,53 +442,162 @@
       children.forEach(c => el.appendChild(c));
       return el;
     }
+    function updateRowPreview(url, el) {
+      const img = el.querySelector('.preview-img');
+      const placeholder = el.querySelector('.preview-placeholder');
+      const badge = el.querySelector('.preview-badge');
+      const info = getVideoInfo(url);
+      
+      if (info.type === 'youtube' && info.id) {
+        img.src = `https://img.youtube.com/vi/${info.id}/mqdefault.jpg`;
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        badge.textContent = info.isVertical ? 'YouTube Short' : 'YouTube';
+        badge.className = 'preview-badge absolute bottom-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-600 text-white tracking-wide';
+        el.style.background = '';
+      } else if (info.type === 'instagram' && info.id) {
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        placeholder.className = 'preview-placeholder flex flex-col items-center justify-center text-white gap-1.5';
+        placeholder.innerHTML = `
+          <i class="fa-brands fa-instagram text-3xl text-pink-400"></i>
+          <span class="text-[9px] uppercase tracking-wider font-semibold">Instagram</span>
+        `;
+        el.style.background = 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)';
+        badge.textContent = 'Instagram Reel';
+        badge.className = 'preview-badge absolute bottom-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-600 text-white tracking-wide';
+      } else {
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        placeholder.className = 'preview-placeholder flex flex-col items-center justify-center text-[#64748B] gap-1.5';
+        placeholder.innerHTML = `
+          <i class="fa-solid fa-video text-2xl"></i>
+          <span class="text-[9px] uppercase tracking-wider font-semibold">No Video</span>
+        `;
+        el.style.background = '';
+        badge.textContent = '';
+        badge.className = 'preview-badge hidden';
+      }
+    }
+
     function renderWork() {
       const root = document.getElementById('workList');
       root.innerHTML = '';
       if (videosCache.length === 0) { root.innerHTML = '<div class="text-[#94A3B8] text-[13px] py-4">No work items yet. Click Add Work to create one.</div>'; return; }
       videosCache.forEach((v, idx) => {
-        const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-xl border border-[#2C2838] bg-[#1A1625]/50';
+        const card = document.createElement('div');
+        card.className = 'flex flex-col md:flex-row gap-4 p-4 rounded-2xl border border-[#2C2838] bg-[#1A1625]/30 hover:bg-[#1A1625]/50 transition duration-300 items-center';
+        
+        // Preview thumbnail container
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'w-24 h-24 md:w-28 md:h-28 rounded-xl overflow-hidden relative flex-shrink-0 bg-neutral-900/60 border border-[#2C2838] flex items-center justify-center cursor-pointer group shadow-inner';
+        previewDiv.innerHTML = `
+          <img class="preview-img absolute inset-0 w-full h-full object-cover hidden" src="" alt="Preview">
+          <div class="preview-placeholder flex flex-col items-center justify-center text-[#64748B] gap-1.5">
+            <i class="fa-solid fa-video text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-wider font-semibold">No Video</span>
+          </div>
+          <div class="preview-play absolute inset-0 bg-[#0B0813]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 backdrop-blur-xs">
+            <div class="w-10 h-10 rounded-full bg-[#00E676] text-[#0B0813] flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition duration-200">
+              <i class="fa-solid fa-play ml-0.5"></i>
+            </div>
+          </div>
+          <span class="preview-badge absolute bottom-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/75 text-white tracking-wide"></span>
+        `;
+        
+        // Inputs grid container (8 columns on desktop)
+        const inputsGrid = document.createElement('div');
+        inputsGrid.className = 'flex-grow grid grid-cols-1 md:grid-cols-8 gap-3 items-end w-full';
+        
         const sel = document.createElement('select');
         sel.className = 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white';
         sel.setAttribute('data-w', 'category'); sel.setAttribute('data-i', String(idx));
+        let hasSelected = false;
         categoriesCache.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.name; opt.textContent = c.name;
-          if (c.name === v.category) opt.selected = true;
+          if (c.name === v.category) { opt.selected = true; hasSelected = true; }
           sel.appendChild(opt);
         });
+        if (!hasSelected && v.category) {
+          const opt = document.createElement('option');
+          opt.value = v.category; opt.textContent = v.category + ' (orphan)';
+          opt.selected = true; opt.disabled = true;
+          sel.appendChild(opt);
+        }
+        
         const inTitle = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', v.title, { 'data-w': 'title', 'data-i': String(idx) });
-        const inUrl = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', v.youtubeUrl, { 'data-w': 'youtubeUrl', 'data-i': String(idx) });
+        const inUrl = makeInput('text', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', v.youtubeUrl || '', { 'data-w': 'youtubeUrl', 'data-i': String(idx) }, 'YouTube/Instagram URL');
         const inOrder = makeInput('number', 'w-full bg-[#0B0813] border border-[#2C2838] rounded-xl px-3 py-2.5 outline-none focus:border-[#00E676] text-[13px] text-white', String(v.order ?? 0), { 'data-w': 'order', 'data-i': String(idx) });
+        
         const cb = document.createElement('input');
         cb.type = 'checkbox'; cb.className = 'w-4 h-4 accent-[#00E676]';
         cb.setAttribute('data-w', 'featured'); cb.setAttribute('data-i', String(idx));
         cb.checked = !!v.featured;
         const span = document.createElement('span');
         span.className = 'text-[12px] text-[#94A3B8]'; span.textContent = 'Featured';
+        
+        inputsGrid.appendChild(makeCol('md:col-span-2', [makeLabel('Title'), inTitle]));
+        inputsGrid.appendChild(makeCol('md:col-span-2', [makeLabel('Category'), sel]));
+        inputsGrid.appendChild(makeCol('md:col-span-2', [makeLabel('Video URL (YouTube/Instagram)'), inUrl]));
+        inputsGrid.appendChild(makeCol('md:col-span-1', [makeLabel('Order'), inOrder]));
+        
+        const fe = document.createElement('div'); fe.className = 'md:col-span-1 flex items-center gap-2 pb-2';
+        fe.appendChild(cb); fe.appendChild(span); inputsGrid.appendChild(fe);
+        
         const btnRm = document.createElement('button');
         btnRm.className = 'btn-sm btn-red'; btnRm.textContent = 'Remove'; btnRm.setAttribute('data-rm-work', String(idx));
         const btnSave = document.createElement('button');
         btnSave.className = 'btn-sm btn-green'; btnSave.textContent = 'Save'; btnSave.setAttribute('data-save-work', String(idx));
-        row.appendChild(makeCol('md:col-span-3', [makeLabel('Title'), inTitle]));
-        row.appendChild(makeCol('md:col-span-2', [makeLabel('Category'), sel]));
-        row.appendChild(makeCol('md:col-span-3', [makeLabel('YouTube URL'), inUrl]));
-        row.appendChild(makeCol('md:col-span-1', [makeLabel('Order'), inOrder]));
-        const fe = document.createElement('div'); fe.className = 'md:col-span-1 flex items-center gap-2 pb-2';
-        fe.appendChild(cb); fe.appendChild(span); row.appendChild(fe);
-        const btnWrap = document.createElement('div'); btnWrap.className = 'md:col-span-2 flex gap-2 justify-end';
-        btnWrap.appendChild(btnRm); btnWrap.appendChild(btnSave); row.appendChild(btnWrap);
-        root.appendChild(row);
+        
+        const btnWrap = document.createElement('div');
+        btnWrap.className = 'flex flex-row md:flex-col gap-2 justify-end w-full md:w-auto';
+        btnWrap.appendChild(btnSave);
+        btnWrap.appendChild(btnRm);
+        
+        card.appendChild(previewDiv);
+        card.appendChild(inputsGrid);
+        card.appendChild(btnWrap);
+        root.appendChild(card);
+        
+        // Listeners for live preview update
+        inUrl.addEventListener('input', () => {
+          updateRowPreview(inUrl.value, previewDiv);
+        });
+        updateRowPreview(v.youtubeUrl || '', previewDiv);
+        
+        // Open modal on preview click
+        previewDiv.addEventListener('click', () => {
+          openModal(inUrl.value);
+        });
       });
+      
       root.querySelectorAll('[data-w]').forEach(el => {
-        el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-w'); const val = el.type === 'checkbox' ? el.checked : el.value; videosCache[idx][field] = val; });
+        el.addEventListener('change', () => {
+          const idx = Number(el.getAttribute('data-i'));
+          const field = el.getAttribute('data-w');
+          let val = el.type === 'checkbox' ? el.checked : el.value;
+          if (field === 'order') val = parseInt(val || '0', 10);
+          videosCache[idx][field] = val;
+        });
       });
       root.querySelectorAll('[data-save-work]').forEach(btn => {
-        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.videos, videosCache); showToast('Work saved'); });
+        btn.addEventListener('click', async () => { await safeSavePath(RTDB_PATHS.videos, videosCache, 'Work item saved'); });
       });
       root.querySelectorAll('[data-rm-work]').forEach(btn => {
-        btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-work')); if (!confirm('Remove this work item?')) return; videosCache.splice(idx, 1); await savePath(RTDB_PATHS.videos, videosCache); });
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.getAttribute('data-rm-work'));
+          if (!confirm('Remove this work item?')) return;
+          const removed = videosCache.splice(idx, 1)[0];
+          try {
+            await savePath(RTDB_PATHS.videos, videosCache);
+            showToast('Work item removed');
+          } catch (err) {
+            videosCache.splice(idx, 0, removed);
+            console.error(err);
+            showToast('Failed to remove work item: ' + (err.message || 'Permission denied'), true);
+          }
+        });
       });
     }
 
@@ -434,10 +622,22 @@
         el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-c'); const val = field === 'order' ? parseInt(el.value || '0', 10) : el.value; categoriesCache[idx][field] = val; });
       });
       root.querySelectorAll('[data-save-cat]').forEach(btn => {
-        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.categories, categoriesCache); showToast('Categories saved'); });
+        btn.addEventListener('click', async () => { await safeSavePath(RTDB_PATHS.categories, categoriesCache, 'Categories saved'); });
       });
       root.querySelectorAll('[data-rm-cat]').forEach(btn => {
-        btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-cat')); if (!confirm('Remove this category?')) return; categoriesCache.splice(idx, 1); await savePath(RTDB_PATHS.categories, categoriesCache); });
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.getAttribute('data-rm-cat'));
+          if (!confirm('Remove this category?')) return;
+          const removed = categoriesCache.splice(idx, 1)[0];
+          try {
+            await savePath(RTDB_PATHS.categories, categoriesCache);
+            showToast('Category removed');
+          } catch (err) {
+            categoriesCache.splice(idx, 0, removed);
+            console.error(err);
+            showToast('Failed to remove category: ' + (err.message || 'Permission denied'), true);
+          }
+        });
       });
     }
 
@@ -468,25 +668,58 @@
         el.addEventListener('change', () => { const idx = Number(el.getAttribute('data-i')); const field = el.getAttribute('data-t'); testimonialsCache[idx][field] = el.value; });
       });
       root.querySelectorAll('[data-save-test]').forEach(btn => {
-        btn.addEventListener('click', async () => { await savePath(RTDB_PATHS.testimonials, testimonialsCache); showToast('Testimonials saved'); });
+        btn.addEventListener('click', async () => { await safeSavePath(RTDB_PATHS.testimonials, testimonialsCache, 'Testimonials saved'); });
       });
       root.querySelectorAll('[data-rm-test]').forEach(btn => {
-        btn.addEventListener('click', async () => { const idx = Number(btn.getAttribute('data-rm-test')); if (!confirm('Remove this testimonial?')) return; testimonialsCache.splice(idx, 1); await savePath(RTDB_PATHS.testimonials, testimonialsCache); });
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.getAttribute('data-rm-test'));
+          if (!confirm('Remove this testimonial?')) return;
+          const removed = testimonialsCache.splice(idx, 1)[0];
+          try {
+            await savePath(RTDB_PATHS.testimonials, testimonialsCache);
+            showToast('Testimonial removed');
+          } catch (err) {
+            testimonialsCache.splice(idx, 0, removed);
+            console.error(err);
+            showToast('Failed to remove testimonial: ' + (err.message || 'Permission denied'), true);
+          }
+        });
       });
     }
 
     document.getElementById('addWorkBtn').addEventListener('click', async () => {
       const cat = categoriesCache[0]?.name || 'General';
       videosCache.push({ title: 'New Work', category: cat, youtubeUrl: '', featured: false, order: videosCache.length + 1 });
-      await savePath(RTDB_PATHS.videos, videosCache);
+      try {
+        await savePath(RTDB_PATHS.videos, videosCache);
+        showToast('Work item added');
+      } catch (err) {
+        videosCache.pop();
+        console.error(err);
+        showToast('Failed to add work item: ' + (err.message || 'Permission denied'), true);
+      }
     });
     document.getElementById('addCatBtn').addEventListener('click', async () => {
       categoriesCache.push({ name: 'New Category', order: categoriesCache.length + 1 });
-      await savePath(RTDB_PATHS.categories, categoriesCache);
+      try {
+        await savePath(RTDB_PATHS.categories, categoriesCache);
+        showToast('Category added');
+      } catch (err) {
+        categoriesCache.pop();
+        console.error(err);
+        showToast('Failed to add category: ' + (err.message || 'Permission denied'), true);
+      }
     });
     document.getElementById('addTestBtn').addEventListener('click', async () => {
       testimonialsCache.push({ quote: 'New testimonial', name: 'Name', role: 'Role', avatar: '' });
-      await savePath(RTDB_PATHS.testimonials, testimonialsCache);
+      try {
+        await savePath(RTDB_PATHS.testimonials, testimonialsCache);
+        showToast('Testimonial added');
+      } catch (err) {
+        testimonialsCache.pop();
+        console.error(err);
+        showToast('Failed to add testimonial: ' + (err.message || 'Permission denied'), true);
+      }
     });
 
     // Password change
@@ -535,8 +768,33 @@
     watchRtdb(RTDB_PATHS.videos, (data) => { videosCache = data; renderWork(); }, DEFAULT_VIDEOS);
     watchRtdb(RTDB_PATHS.testimonials, (data) => { testimonialsCache = data; renderTestimonials(); }, DEFAULT_TESTIMONIALS);
 
-    if (isAuthed()) showPanel();
-    else showLogin();
+    // Initial visual setup using local storage check to prevent blank flashes
+    if (isAuthed()) {
+      showPanel();
+    } else {
+      showLogin();
+    }
+
+    // Subscribe to Firebase Authentication state changes for true session state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthed(true, user.email);
+        showPanel();
+      } else {
+        setAuthed(false);
+        showLogin();
+      }
+    });
   </script>
+
+  <!-- Video Modal -->
+  <div id="videoModal" role="dialog" aria-modal="true">
+    <div class="vm-inner" id="vmInner">
+      <button class="vm-close" id="vmClose" aria-label="Close">&times;</button>
+      <div class="vm-ratio" id="vmRatio">
+        <iframe id="vmFrame" src="" title="Video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

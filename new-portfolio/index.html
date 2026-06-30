@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sinan MP | Portfolio</title>
+    <title>Ajzal M | Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -39,11 +40,36 @@
         .animate-hero { animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes bounceSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
         .animate-bounce-slow { animation: bounceSlow 2s infinite ease-in-out; }
-        .nav-base { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; max-width: 100%; top: 0; border-radius: 0px; }
+        .nav-base {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 100%;
+            top: 0;
+            border-radius: 0px;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         .nav-hidden { background: transparent !important; border-color: transparent !important; backdrop-filter: none !important; }
         .nav-hidden .nav-inner { opacity: 0; pointer-events: none; transform: translateY(-8px); }
         .nav-inner { transition: opacity 0.25s ease, transform 0.25s ease; opacity: 1; }
-        .nav-scrolled { top: 20px !important; width: 90% !important; max-width: 1200px !important; border-radius: 9999px !important; background: rgba(3, 0, 20, 0.6) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+        .nav-scrolled {
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 90% !important;
+            max-width: 1200px !important;
+            border-radius: 9999px !important;
+            background: rgba(3, 0, 14, 0.92) !important;
+            backdrop-filter: blur(28px) saturate(1.6) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(1.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.07) !important;
+            padding-top: 0.65rem !important;
+            padding-bottom: 0.65rem !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(168,85,247,0.06);
+        }
         .nav-scrolled .nav-inner { opacity: 1; pointer-events: auto; transform: translateY(0); }
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .element-interaction-blueprint { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -110,21 +136,80 @@
         @media (max-width: 968px) { .services-container { grid-template-columns: 1fr; gap: 2.5rem; } .services-header .section-title { font-size: 2.8rem; } }
         @media (max-width: 768px) { .section-title { font-size: 2.25rem; } .testimonials-grid { grid-template-columns: 1fr; } .cta-card h2 { font-size: 2.5rem; } .footer-main { flex-direction: column; text-align: center; gap: 30px; } .footer-bottom { flex-direction: column; text-align: center; } .footer-legal a { margin: 0 10px; } }
         @media (max-width: 576px) { .services-header .section-title { font-size: 2.3rem; } .services-header h3 { font-size: 1.4rem; } .service-item { padding: 1.2rem; } .service-info { gap: 1rem; } .service-title h2 { font-size: 1.15rem; } .service-content { padding-left: 2rem; padding-top: 1rem; } .service-content p { font-size: 0.95rem; } }
-        .featured-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; overflow: hidden; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .featured-card:hover { border-color: rgba(168, 85, 247, 0.4); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+        /* ── Featured Work Carousel ── */
+        .fw-carousel-wrap { position: relative; width: 100%; overflow: hidden; }
+        .fw-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; align-items: center; padding: 30px 0; }
+        .fw-slide { flex: 0 0 310px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity, filter; }
+        @media (max-width: 640px) { .fw-slide { flex: 0 0 270px; } }
+        .featured-card { 
+            background: rgba(255,255,255,0.02); 
+            border: 1px solid rgba(255,255,255,0.06); 
+            border-radius: 24px; 
+            overflow: hidden; 
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
+            cursor: pointer; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        /* Active center slide */
+        .fw-slide.active-slide { opacity: 1; transform: scale(1.05); filter: blur(0); z-index: 5; }
+        .fw-slide.active-slide .featured-card { 
+            border-color: rgba(168, 85, 247, 0.5); 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(168,85,247,0.15); 
+        }
+        .fw-slide.active-slide .fc-play-btn { 
+            transform: scale(1.1); 
+            background: rgba(168, 85, 247, 0.9); 
+            border-color: #a855f7; 
+            box-shadow: 0 0 20px rgba(168,85,247,0.4); 
+        }
+        /* Inactive slides */
+        .fw-slide.inactive-slide { opacity: 0.35; transform: scale(0.9); filter: blur(1.5px); z-index: 1; }
+        .fc-thumb { position: relative; overflow: hidden; background: #0b0b14; }
+        .fc-thumb.landscape { aspect-ratio: 16/9; }
+        .fc-thumb.portrait  { aspect-ratio: 9/16; }
+        .fc-thumb iframe { width: 100%; height: 100%; border: none; display: block; pointer-events: none; }
+        .fc-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); transition: background 0.3s; }
+        .featured-card:hover .fc-play-overlay { background: rgba(0,0,0,0.15); }
+        .fc-play-btn { width: 52px; height: 52px; background: rgba(255,255,255,0.15); border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: transform 0.3s, background 0.3s; }
+        .featured-card:hover .fc-play-btn { transform: scale(1.12); background: rgba(168,85,247,0.5); border-color: #a855f7; }
+        .fw-nav-btn { position: absolute; top: 40%; transform: translateY(-50%); z-index: 10; width: 40px; height: 40px; border-radius: 50%; background: rgba(3,0,14,0.85); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: all 0.25s; }
+        .fw-nav-btn:hover { background: rgba(168,85,247,0.5); border-color: #a855f7; }
+        .fw-prev { left: -18px; } .fw-next { right: -18px; }
+        .fw-dots { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+        .fw-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; cursor: pointer; }
+        .fw-dot.active { background: #a855f7; width: 18px; border-radius: 3px; }
+        /* ── Video Modal ── */
+        #videoModal { display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); backdrop-filter: blur(16px); }
+        #videoModal.open { display: flex; }
+        .vm-inner { position: relative; width: 90vw; max-width: 900px; }
+        .vm-inner.portrait-mode { max-width: 380px; }
+        .vm-ratio { position: relative; padding-top: 56.25%; background: #000; border-radius: 16px; overflow: hidden; }
+        .vm-inner.portrait-mode .vm-ratio { padding-top: 177.78%; }
+        .vm-ratio iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+        .vm-close { position: absolute; top: -14px; right: -14px; width: 36px; height: 36px; border-radius: 50%; background: rgba(30,30,40,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; transition: background 0.2s; z-index: 10; }
+        .vm-close:hover { background: rgba(239,68,68,0.4); }
+        /* ── Contact section ── */
+        .cta-card h2 { font-size: 4rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.05em; color: #ffffff; }
+        .cta-gradient-text { background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .btn-whatsapp { background: #25D366; color: #fff; box-shadow: 0 4px 24px rgba(37,211,102,0.35); }
+        .btn-whatsapp:hover { background: #1ebe5d; transform: translateY(-3px); box-shadow: 0 8px 32px rgba(37,211,102,0.5); }
+        .btn-email { background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.15); }
+        .btn-email:hover { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.15); transform: translateY(-3px); }
+        .cta-email-text { color: #6b7280; } .cta-email-text a { color: #c084fc; border-bottom-color: rgba(192,132,252,0.4); }
+        .cta-email-text a:hover { color: #e9d5ff; border-color: #e9d5ff; }
     </style>
 </head>
 <body class="relative flex flex-col items-center">
 
-    <nav id="navbar" class="nav-base fixed z-50 px-6 py-6 md:px-12 flex justify-between items-center" style="background: rgba(3,0,20,0.6); backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255,255,255,0.08);">
+    <nav id="navbar" class="nav-base fixed z-50 px-6 py-6 md:px-12 flex justify-between items-center">
         <div class="nav-inner flex items-center">
             <a href="#" class="text-xl font-bold tracking-wider text-white select-none transition hover:opacity-80">
-                SINAN<span class="text-purple-500">.MP</span>
+                AJZAL<span class="text-purple-500">.</span>M
             </a>
         </div>
         <div class="hidden md:flex nav-inner items-center space-x-10">
             <div class="flex space-x-8 text-sm font-medium text-gray-400">
-                <a href="works.html" class="hover:text-white transition duration-200 tracking-wide">All Works</a>
+                <a href="works.html" class="hover:text-white transition duration-200 tracking-wide">Work</a>
                 <a href="#services" class="hover:text-white transition duration-200 tracking-wide">Services</a>
                 <a href="#about" class="hover:text-white transition duration-200 tracking-wide">About</a>
                 <a href="#contact" class="hover:text-white transition duration-200 tracking-wide">Contact</a>
@@ -141,7 +226,7 @@
             </svg>
         </button>
         <div id="mobile-menu" class="fixed inset-0 bg-[#030014]/98 backdrop-blur-2xl flex flex-col justify-center items-center space-y-8 text-2xl font-light text-gray-300 translate-x-full md:hidden rounded-none">
-            <a href="works.html" class="mobile-link hover:text-white transition duration-200">All Works</a>
+            <a href="works.html" class="mobile-link hover:text-white transition duration-200">Work</a>
             <a href="#services" class="mobile-link hover:text-white transition duration-200">Services</a>
             <a href="#about" class="mobile-link hover:text-white transition duration-200">About</a>
             <a href="#contact" class="mobile-link hover:text-white transition duration-200">Contact</a>
@@ -150,18 +235,18 @@
     </nav>
 
     <section id="home" class="relative min-h-screen w-full flex flex-col justify-center items-center text-center px-4 pt-20 select-none">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none opacity-40 blur-[80px]"
-             style="background: radial-gradient(circle, #6d28d9 0%, #a855f7 40%, transparent 70%);">
+        <div class="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none opacity-40 blur-[100px]"
+             style="background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(109, 40, 217, 0.04) 50%, transparent 70%);">
         </div>
         <div class="animate-hero z-10 flex flex-col items-center max-w-5xl mx-auto">
-            <div class="relative w-36 h-36 rounded-full p-[2.5px] bg-gradient-to-b from-purple-500/60 via-purple-500/20 to-transparent mb-10 shadow-xl">
+            <div class="relative w-36 h-36 rounded-full p-[2px] bg-purple-600/40 border border-purple-500/30 shadow-[0_0_35px_rgba(168,85,247,0.4)] mb-10">
                 <div class="w-full h-full rounded-full bg-[#030014] flex items-center justify-center overflow-hidden">
                     <img src="image/profile.png" alt="Ajzal M Profile" class="w-full h-full object-cover">
                 </div>
             </div>
-            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
+            <h1 class="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
                 <span class="text-white block">Crafting Visual</span>
-                <span class="bg-gradient-to-r from-white via-purple-200 to-purple-500 bg-clip-text text-transparent block mt-2">Stories That Move.</span>
+                <span class="bg-gradient-to-r from-white via-purple-300 to-purple-500 bg-clip-text text-transparent block mt-2">Stories That Move.</span>
             </h1>
             <p class="text-gray-400 text-xs sm:text-sm md:text-base font-light tracking-wide max-w-2xl mb-12 flex flex-wrap justify-center items-center gap-2 sm:gap-3">
                 <span>Cinematic Video Editing</span>
@@ -170,15 +255,13 @@
                 <span class="text-neutral-700 font-normal">|</span>
                 <span>Brand Identity Design</span>
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
-                <a href="works.html" class="bg-zinc-900 text-white border border-zinc-800 text-sm font-medium px-8 py-3.5 rounded-full hover:bg-zinc-800 active:scale-95 transition-all duration-200 shadow-lg">
-                    View All Works
+            <div class="flex flex-col sm:flex-row gap-6 w-full sm:w-auto px-6 sm:px-0 items-center justify-center">
+                <a href="works.html" class="bg-white/5 text-white border border-white/10 text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white/20 active:scale-95 transition-all duration-200 shadow-lg">
+                    View My Work
                 </a>
-                <a href="#contact" class="text-sm font-medium flex items-center justify-center space-x-2.5 px-8 py-3.5 text-gray-300 hover:text-white active:scale-95 transition-all duration-200">
+                <a href="#contact" class="text-sm font-medium flex items-center justify-center gap-2 px-8 py-3.5 text-gray-400 hover:text-white active:scale-95 transition-all duration-200">
+                    <i class="fa-regular fa-comment text-base"></i>
                     <span>Contact Now</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
                 </a>
             </div>
         </div>
@@ -195,7 +278,7 @@
         <div class="animate-fade-in relative w-full rounded-3xl p-8 md:p-12 bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl grid grid-cols-1 lg:grid-cols-3 gap-8 items-center shadow-2xl">
             <div class="lg:col-span-2 space-y-6">
                 <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-white">
-                    Hi, I'm <span class="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Sinan.</span>
+                    Hi, I'm <span class="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Ajzal.</span>
                 </h2>
                 <p class="text-gray-400 text-base md:text-lg font-light leading-relaxed max-w-2xl">
                     I am a 23-year-old creative professional specializing in <strong class="text-white font-medium">cinematic storytelling</strong> and <strong class="text-white font-medium">high-impact visual design</strong>.
@@ -212,26 +295,46 @@
         </div>
     </section>
 
-    <section id="work" class="bg-transparent text-white py-24 px-6 md:px-16 min-h-screen flex flex-col justify-center select-none font-sans overflow-hidden relative">
+    <section id="work" class="bg-transparent text-white py-24 px-6 md:px-16 flex flex-col justify-center select-none font-sans overflow-hidden relative">
         <div class="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none opacity-20 blur-[100px]" style="background: radial-gradient(circle, #6d28d9 0%, transparent 70%);"></div>
         <div class="max-w-7xl mx-auto w-full relative z-10">
-            <div class="flex flex-col items-center text-center mb-16 space-y-4 reveal">
+            <div class="flex flex-col items-center text-center mb-14 space-y-4 reveal">
                 <div class="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/30 text-purple-400 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full">
                     <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span> Work
                 </div>
                 <h2 class="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl leading-tight">Featured Projects</h2>
             </div>
-            <div class="relative w-full px-4">
-                <div id="featuredWorkGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center"></div>
-                <div class="flex justify-center mt-12 reveal">
-                    <a href="works.html" class="inline-flex items-center gap-2 bg-white text-black text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-lg">
-                        View All Works
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </a>
+            <!-- Carousel -->
+            <div class="relative px-6 reveal">
+                <button class="fw-nav-btn fw-prev" id="fwPrev" aria-label="Previous">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <div class="fw-carousel-wrap" id="fwCarouselWrap">
+                    <div class="fw-track" id="fwTrack"></div>
                 </div>
+                <button class="fw-nav-btn fw-next" id="fwNext" aria-label="Next">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <div class="fw-dots" id="fwDots"></div>
+            </div>
+            <div class="flex justify-center mt-12 reveal">
+                <a href="works.html" class="inline-flex items-center gap-2 bg-white text-black text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-lg">
+                    View All Works
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </a>
             </div>
         </div>
     </section>
+
+    <!-- Video Modal -->
+    <div id="videoModal" role="dialog" aria-modal="true">
+        <div class="vm-inner" id="vmInner">
+            <button class="vm-close" id="vmClose" aria-label="Close">&times;</button>
+            <div class="vm-ratio" id="vmRatio">
+                <iframe id="vmFrame" src="" title="Video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <section id="services" class="services-section reveal">
         <div class="services-container">
@@ -283,13 +386,19 @@
     <section id="contact" class="cta-section">
         <div class="container">
             <div class="cta-card reveal">
-                <h2>Let's Create Something Powerful.</h2>
+                <h2>Let's Create <span class="cta-gradient-text">Something Powerful.</span></h2>
                 <p>Ready to elevate your visual identity? Connect with me directly via WhatsApp or Email.</p>
                 <div class="cta-buttons">
-                    <a href="#" class="btn btn-primary">Chat on WhatsApp</a>
-                    <a href="mailto:ajzalajaxeey@gmail.com" class="btn btn-secondary">Send Email</a>
+                    <a href="https://wa.me/919447654321" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Chat on WhatsApp
+                    </a>
+                    <a href="mailto:ajzalajaxeey@gmail.com" class="btn btn-email">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Send Email
+                    </a>
                 </div>
-                <div class="cta-email">
+                <div class="cta-email cta-email-text">
                     Email me at <a href="mailto:ajzalajaxeey@gmail.com">ajzalajaxeey@gmail.com</a>
                 </div>
             </div>
@@ -358,51 +467,184 @@
     </script>
 
     <script type="module">
-      import { watchRtdb, RTDB_PATHS } from '/js/firebase-config.js';
+      import { watchRtdb, RTDB_PATHS } from './js/firebase-config.js';
 
       function esc(s) { return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-      function getYouTubeId(url) { if (!url) return null; const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
+
+      function getVideoInfo(url) {
+        if (!url) return { type: 'unknown', id: null, embedUrl: '', isVertical: false };
+        const igReg = /(?:instagram\.com\/(?:p|reel)\/)([a-zA-Z0-9_-]+)/;
+        const igMatch = url.match(igReg);
+        if (igMatch) {
+          return { type: 'instagram', id: igMatch[1], embedUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed`, isVertical: true };
+        }
+        const ytReg = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+        const ytMatch = url.match(ytReg);
+        if (ytMatch && ytMatch[2].length === 11) {
+          const id = ytMatch[2];
+          const isShort = url.includes('/shorts/');
+          return { type: 'youtube', id, embedUrl: `https://www.youtube.com/embed/${id}`, isVertical: isShort };
+        }
+        return { type: 'unknown', id: null, embedUrl: '', isVertical: false };
+      }
+
+      /* ── Carousel state ── */
+      let carouselItems = [];
+      let carouselIdx = 0;
 
       function getFeaturedItems(videos) {
         let featured = videos.filter(v => v.featured);
         if (featured.length === 0) featured = [...videos];
         featured.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        return featured.slice(0, 3);
+        return featured.slice(0, 6);
       }
 
-      function renderFeatured(videos) {
-        const grid = document.getElementById('featuredWorkGrid');
-        if (!grid) return;
-        const items = getFeaturedItems(videos);
-        grid.innerHTML = '';
+      function buildCarousel(items) {
+        carouselItems = items;
+        carouselIdx = 0;
+        const track = document.getElementById('fwTrack');
+        const dots  = document.getElementById('fwDots');
+        if (!track) return;
+        track.innerHTML = '';
+        dots.innerHTML  = '';
         if (items.length === 0) {
-          grid.innerHTML = '<div class="text-center text-gray-500 py-12 col-span-3">No featured works yet. Add them in the Admin panel.</div>';
+          track.innerHTML = '<div class="text-center text-gray-500 py-16 w-full">No featured works yet.</div>';
           return;
         }
         items.forEach((v, i) => {
-          const ytId = getYouTubeId(v.youtubeUrl);
-          const embed = ytId ? `https://www.youtube.com/embed/${ytId}` : '';
-          const delay = ['delay-100', 'delay-200', 'delay-300'][i % 3];
-          const isCenter = i === 1;
-          const card = document.createElement('div');
-          card.className = `featured-card reveal ${delay} ${isCenter ? 'md:scale-105 z-20' : ''} in-view`;
-          card.innerHTML = `
-            <div class="aspect-video bg-zinc-900 relative overflow-hidden">
-              ${embed ? `<iframe class="w-full h-full" src="${esc(embed)}" title="${esc(v.title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-                : '<div class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">No video URL</div>'}
-            </div>
-            <div class="p-5">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-xs font-semibold bg-purple-600/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">${esc(v.category)}</span>
-                ${v.featured ? '<span class="text-xs font-semibold bg-white/10 text-white px-2 py-0.5 rounded">Featured</span>' : ''}
+          const info = getVideoInfo(v.videoUrl || v.youtubeUrl);
+          const thumbClass = info.isVertical ? 'portrait' : 'landscape';
+          const slide = document.createElement('div');
+          slide.className = 'fw-slide';
+          
+          let thumbnailHtml = '';
+          if (info.type === 'youtube' && info.id) {
+            thumbnailHtml = `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" class="w-full h-full object-cover" alt="${esc(v.title)}" loading="lazy">`;
+          } else if (info.type === 'instagram' && info.id) {
+            thumbnailHtml = `
+              <div class="w-full h-full flex flex-col items-center justify-center text-white gap-2" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);">
+                <i class="fa-brands fa-instagram text-4xl opacity-90 drop-shadow-md"></i>
+                <span class="text-[9px] uppercase tracking-widest font-bold opacity-80">Instagram Reel</span>
               </div>
-              <h3 class="text-lg font-semibold text-white">${esc(v.title)}</h3>
-              ${v.youtubeUrl ? `<a href="${esc(v.youtubeUrl)}" target="_blank" class="text-xs text-purple-400 hover:text-purple-300 mt-2 inline-block">Watch on YouTube &rarr;</a>` : ''}
-            </div>
-          `;
-          grid.appendChild(card);
+            `;
+          } else {
+            thumbnailHtml = `
+              <div class="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-neutral-900 gap-1">
+                <i class="fa-solid fa-video text-2xl"></i>
+                <span class="text-xs uppercase tracking-wider">No Video</span>
+              </div>
+            `;
+          }
+          
+          slide.innerHTML = `
+            <div class="featured-card" data-idx="${i}">
+              <div class="fc-thumb ${thumbClass}">
+                ${thumbnailHtml}
+                <div class="fc-play-overlay">
+                  <div class="fc-play-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="p-5">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-semibold bg-purple-600/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">${esc(v.category || '')}</span>
+                  ${v.featured ? '<span class="text-xs font-semibold bg-white/10 text-white px-2 py-0.5 rounded">Featured</span>' : ''}
+                  ${info.isVertical ? '<span class="text-xs font-semibold bg-indigo-600/20 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded">Short</span>' : ''}
+                </div>
+                <h3 class="text-base font-semibold text-white leading-snug">${esc(v.title)}</h3>
+              </div>
+            </div>`;
+          track.appendChild(slide);
+
+          // dot
+          const dot = document.createElement('div');
+          dot.className = 'fw-dot' + (i === 0 ? ' active' : '');
+          dot.addEventListener('click', () => goSlide(i));
+          dots.appendChild(dot);
         });
+
+        // Click handler: active opens modal, adjacent centers that slide
+        track.querySelectorAll('.featured-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            const idx = +card.dataset.idx;
+            if (idx === carouselIdx) {
+              openModal(carouselItems[idx]);
+            } else {
+              goSlide(idx);
+            }
+          });
+        });
+
+        updateCarousel();
       }
+
+      function goSlide(idx) {
+        carouselIdx = Math.max(0, Math.min(idx, carouselItems.length - 1));
+        updateCarousel();
+      }
+
+      function updateCarousel() {
+        const track = document.getElementById('fwTrack');
+        const dots  = document.querySelectorAll('.fw-dot');
+        if (!track) return;
+        const slides = track.querySelectorAll('.fw-slide');
+        if (slides.length === 0) return;
+        
+        const containerW = document.getElementById('fwCarouselWrap').offsetWidth;
+        const slideW = slides[0].offsetWidth;
+        const gap = 24; // matches CSS gap
+        
+        // Calculate offset to center active slide
+        const offsetX = (containerW / 2) - (carouselIdx * (slideW + gap) + (slideW / 2));
+        track.style.transform = `translateX(${offsetX}px)`;
+        
+        // Toggle active/inactive slide classes
+        slides.forEach((slide, i) => {
+          if (i === carouselIdx) {
+            slide.classList.add('active-slide');
+            slide.classList.remove('inactive-slide');
+          } else {
+            slide.classList.remove('active-slide');
+            slide.classList.add('inactive-slide');
+          }
+        });
+        
+        // Update dots
+        dots.forEach((d, i) => d.classList.toggle('active', i === carouselIdx));
+      }
+
+      document.getElementById('fwPrev')?.addEventListener('click', () => goSlide(carouselIdx - 1));
+      document.getElementById('fwNext')?.addEventListener('click', () => goSlide(carouselIdx + 1));
+      window.addEventListener('resize', updateCarousel);
+
+      /* ── Modal ── */
+      function openModal(v) {
+        if (!v) return;
+        const info = getVideoInfo(v.videoUrl || v.youtubeUrl);
+        if (!info.embedUrl) return;
+        const modal  = document.getElementById('videoModal');
+        const inner  = document.getElementById('vmInner');
+        const frame  = document.getElementById('vmFrame');
+        frame.src = info.embedUrl + '?autoplay=1&rel=0';
+        inner.classList.toggle('portrait-mode', info.isVertical);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('videoModal');
+        const frame = document.getElementById('vmFrame');
+        modal.classList.remove('open');
+        frame.src = '';
+        document.body.style.overflow = '';
+      }
+
+      document.getElementById('vmClose')?.addEventListener('click', closeModal);
+      document.getElementById('videoModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+      function renderFeatured(videos) { buildCarousel(getFeaturedItems(videos)); }
 
       function renderTestimonials(items) {
         const grid = document.getElementById('testimonialsGrid');

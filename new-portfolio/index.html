@@ -139,41 +139,45 @@
         @media (max-width: 768px) { .section-title { font-size: 2.25rem; } .testimonials-grid { grid-template-columns: 1fr; } .cta-card h2 { font-size: 2.5rem; } .footer-main { flex-direction: column; text-align: center; gap: 30px; } .footer-bottom { flex-direction: column; text-align: center; } .footer-legal a { margin: 0 10px; } }
         @media (max-width: 576px) { .services-header .section-title { font-size: 2.3rem; } .services-header h3 { font-size: 1.4rem; } .service-item { padding: 1.2rem; } .service-info { gap: 1rem; } .service-title h2 { font-size: 1.15rem; } .service-content { padding-left: 2rem; padding-top: 1rem; } .service-content p { font-size: 0.95rem; } }
         /* ── Featured Work Carousel ── */
-        .fw-carousel-wrap { position: relative; width: 100%; overflow: hidden; }
-        .fw-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; align-items: center; padding: 30px 0; }
-        .fw-slide { flex: 0 0 420px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity, filter; }
-        @media (max-width: 1024px) { .fw-slide { flex: 0 0 360px; } }
-        @media (max-width: 640px) { .fw-slide { flex: 0 0 320px; } }
+        .fw-carousel-wrap { position: relative; width: 100%; overflow: visible; }
+        .fw-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; align-items: center; padding: 30px 80px; }
+        .fw-slide { flex: 0 0 420px; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease, filter 0.45s ease; will-change: transform, opacity, filter; }
+        @media (max-width: 1024px) { .fw-track { padding: 30px 40px; } .fw-slide { flex: 0 0 360px; } }
+        @media (max-width: 640px) { .fw-track { padding: 20px 20px; } .fw-slide { flex: 0 0 320px; } }
         .featured-card { 
-            background: rgba(255,255,255,0.02); 
-            border: 1px solid rgba(255,255,255,0.06); 
-            border-radius: 24px; 
-            overflow: hidden; 
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-            cursor: pointer; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          background: rgba(255,255,255,0.02); 
+          border: 1px solid rgba(255,255,255,0.06); 
+          border-radius: 24px; 
+          overflow: hidden; 
+          transition: box-shadow 0.45s ease, border-color 0.45s ease; 
+          cursor: pointer; 
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        /* Active center slide */
-        .fw-slide.active-slide { opacity: 1; transform: scale(1.05); filter: blur(0); z-index: 5; }
+        /* Active center slide with fade/zoom animation */
+        @keyframes fadeZoom { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1.05); } }
+        .fw-slide.active-slide { opacity: 1; transform: scale(1.05); filter: blur(0); z-index: 5; animation: fadeZoom .45s ease both; }
         .fw-slide.active-slide .featured-card { 
-            border-color: rgba(168, 85, 247, 0.5); 
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(168,85,247,0.15); 
+          border-color: rgba(168, 85, 247, 0.5); 
+          box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(168,85,247,0.15); 
         }
         .fw-slide.active-slide .fc-play-btn { 
-            transform: scale(1.1); 
-            background: rgba(168, 85, 247, 0.9); 
-            border-color: #a855f7; 
-            box-shadow: 0 0 20px rgba(168,85,247,0.4); 
+          transform: scale(1.12); 
+          background: rgba(168, 85, 247, 0.95); 
+          border-color: #a855f7; 
+          box-shadow: 0 0 22px rgba(168,85,247,0.45); 
         }
-        /* Inactive slides */
-        .fw-slide.inactive-slide { opacity: 0.35; transform: scale(0.9); filter: blur(1.5px); z-index: 1; }
+        /* Inactive slides (peeking, dimmed) */
+        .fw-slide.inactive-slide { opacity: 0.45; transform: scale(0.94); filter: blur(1px); z-index: 1; }
+        /* Slight negative margins so adjacent slides peek into view */
+        .fw-slide { margin: 0 -22px; }
+        .fw-track { align-items: stretch; }
         .fc-thumb { position: relative; overflow: hidden; background: #0b0b14; }
         .fc-thumb.landscape { aspect-ratio: 16/9; }
         .fc-thumb.portrait  { aspect-ratio: 9/16; }
         .fc-thumb iframe { width: 100%; height: 100%; border: none; display: block; pointer-events: none; }
         .fc-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); transition: background 0.3s; }
         .featured-card:hover .fc-play-overlay { background: rgba(0,0,0,0.15); }
-        .fc-play-btn { width: 52px; height: 52px; background: rgba(255,255,255,0.15); border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: transform 0.3s, background 0.3s; }
+        .fc-play-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.12); border-radius: 50%; border: 2px solid rgba(255,255,255,0.32); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: transform 0.28s, background 0.28s; }
         .featured-card:hover .fc-play-btn { transform: scale(1.12); background: rgba(168,85,247,0.5); border-color: #a855f7; }
         .fw-nav-btn { position: absolute; top: 40%; transform: translateY(-50%); z-index: 10; width: 40px; height: 40px; border-radius: 50%; background: rgba(3,0,14,0.85); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: all 0.25s; }
         .fw-nav-btn:hover { background: rgba(168,85,247,0.5); border-color: #a855f7; }
@@ -528,7 +532,8 @@
 
       function buildCarousel(items) {
         carouselItems = items;
-        carouselIdx = 0;
+        // Auto-center the most recently uploaded video (assume newest is last)
+        carouselIdx = Math.max(0, items.length - 1);
         const track = document.getElementById('fwTrack');
         const dots  = document.getElementById('fwDots');
         if (!track) return;

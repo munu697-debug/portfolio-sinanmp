@@ -1,0 +1,80 @@
+========================================================================
+                      AJZAL.M PORTFOLIO WEBSITE DETAILS
+========================================================================
+
+This file serves as a reference document containing all features, design systems,
+database structures, and behavior rules implemented in the project.
+
+------------------------------------------------------------------------
+1. GENERAL SITE STRUCTURE
+------------------------------------------------------------------------
+* index.html    : Home page featuring profile, 3D project carousel,
+                  services details accordion, testimonials list, contact CTA.
+* works.html    : Full gallery sorted by category section with "See More"
+                  expandable grids.
+* admin.html    : Password-protected content management dashboard to create,
+                  edit, order, and delete items.
+* js/firebase-config.js: Database connections and global RTDB settings.
+
+------------------------------------------------------------------------
+2. DATABASE (FIREBASE REALTIME DATABASE) SCHEMA
+------------------------------------------------------------------------
+Data is stored at the following paths:
+* `/categories/current/items`:
+  Array of objects containing category items for categorizing works:
+  - `name` (String): e.g. "Video Editing", "Motion Graphics"
+  - `order` (Number): Sorting priority for category list
+
+* `/videos/current/items`:
+  Array of video project objects:
+  - `title` (String): Title of the project
+  - `category` (String): Must match one of the category names
+  - `youtubeUrl` (String): Direct link to YouTube video, YouTube Short, or Instagram Reel
+  - `featured` (Boolean): If true, displays in home page featured project carousel
+  - `order` (Number): Display order within categories
+
+* `/testimonials/current/items`:
+  Array of client testimonials:
+  - `name` (String): Client name
+  - `role` (String): Client designation/role
+  - `quote` (String): Testimonial text quote
+  - `avatar` (String): Optional URL to client image/avatar
+
+------------------------------------------------------------------------
+3. HOME PAGE 3D CAROUSEL SPECIFICATIONS
+------------------------------------------------------------------------
+* Smooth 3D animation centering the active project in the view.
+* Active Project:
+  - Enlarged with scale (scale-105)
+  - Glowing purple borders
+  - Plays in-place on click
+* Inactive Adjacent Projects:
+  - Scaled down (scale-90)
+  - Dimmed (opacity-35)
+  - Blurred (blur-[2px])
+  - Click aligns them to the center slide position instead of opening the video player.
+
+------------------------------------------------------------------------
+4. GALLERY ROW & "SEE MORE" COLLAPSIBLE LOGIC (works.html)
+------------------------------------------------------------------------
+* Video grid displays items categorized in rows (e.g. Video Editing, Motion Graphics).
+* Order of display:
+  - "Video Editing" category is prioritised to appear first.
+  - Within each category, Shorts/vertical Reels are dynamically sorted to come first.
+* Collapsible Sections:
+  - Displays exactly 3 items initially per category.
+  - Adds a custom "See More" button if a category contains more than 3 videos.
+  - Clicking "See More" expands the extra items with a staggered entrance transition.
+  - Clicking "Show Less" smoothly collapses the section and scrolls the viewport back up to the section header.
+
+------------------------------------------------------------------------
+5. VIDEO PLAYER MODAL & REDIRECTION NOTES
+------------------------------------------------------------------------
+* Click anywhere on a card (title, badges, or thumbnail) to open the modal player.
+* Modal Aspect Ratio adjusts dynamically to match the content:
+  - Landscape videos (YouTube 16:9): standard landscape player.
+  - Short/Vertical videos (YouTube Shorts & Instagram Reels 9:16): narrow tall portrait player.
+
+* Platform Redirection Rules (Why some videos open in a new tab):
+  - YouTube & YouTube Shorts: Play inline inside the embedded player on the spot.
+  - Instagram Reels: Instagram's security, copyright (licensed audio), and cross-origin policies restrict native autoplay/playback inside embedded iframes. Standard Instagram embeds act as a post preview, and clicking it will redirect the user to Instagram in a new tab to finish viewing the video. This is a platform policy enforced by Meta.

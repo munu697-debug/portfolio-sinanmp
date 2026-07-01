@@ -4,6 +4,7 @@
     { "src": "new-portfoliozip/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/new-portfoliozip/$1" }
+    { "handle": "filesystem" },
+    { "src": "\\/(.*)", "dest": "/new-portfoliozip/index.html" }
   ]
 }

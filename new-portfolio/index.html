@@ -298,35 +298,59 @@
         </div>
     </section>
 
-    <section id="work" class="bg-transparent text-white py-24 px-6 md:px-16 flex flex-col justify-center select-none font-sans overflow-hidden relative">
-        <div class="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none opacity-20 blur-[100px]" style="background: radial-gradient(circle, #6d28d9 0%, transparent 70%);"></div>
-        <div class="max-w-7xl mx-auto w-full relative z-10">
-            <div class="flex flex-col items-center text-center mb-14 space-y-4 reveal">
-                <div class="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/30 text-purple-400 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span> Work
-                </div>
-                <h2 class="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl leading-tight">Featured Projects</h2>
-            </div>
-            <!-- Carousel -->
-            <div class="relative px-6 reveal">
-                <button class="fw-nav-btn fw-prev" id="fwPrev" aria-label="Previous">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <div class="fw-carousel-wrap" id="fwCarouselWrap">
-                    <div class="fw-track" id="fwTrack"></div>
-                </div>
-                <button class="fw-nav-btn fw-next" id="fwNext" aria-label="Next">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
-                <div class="fw-dots" id="fwDots"></div>
-            </div>
-            <div class="flex justify-center mt-12 reveal">
-                <a href="works.html" class="inline-flex items-center gap-2 bg-white text-black text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-lg">
-                    View All Works
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                </a>
-            </div>
+    <section id="work" class="work-section reveal">
+      <p class="section-tag">WORK</p>
+      <h2 class="section-title">Explore our video editing work and projects</h2>
+
+      <div class="projects-carousel" id="fwCarouselWrap">
+        <button class="control-btn btn-active" id="fwPrev" aria-label="Previous">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+
+        <div class="fw-carousel-inner" style="display:flex;align-items:center;gap:24px;overflow:visible;">
+          <div class="fw-track" id="fwTrack"></div>
         </div>
+
+        <button class="control-btn btn-inactive" id="fwNext" aria-label="Next">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="carousel-controls">
+        <button class="control-btn btn-active" id="ctrlPrev" aria-label="Previous small">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <button class="control-btn btn-inactive" id="ctrlNext" aria-label="Next small">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+
+      <style>
+      /* Scoped work-section styles (won't affect other sections) */
+      .work-section { background-color: #000; color:#fff; padding:80px 24px; text-align:center; font-family:inherit; overflow:visible; }
+      .work-section .section-tag { text-transform:uppercase; letter-spacing:0.15em; color:#a855f7; font-size:14px; font-weight:600; margin-bottom:12px; }
+      .work-section .section-title { font-size:36px; font-weight:700; max-width:900px; margin:0 auto 40px auto; line-height:1.1; }
+      .projects-carousel { display:flex; justify-content:center; align-items:center; gap:24px; max-width:1200px; margin:0 auto; padding:10px 0; }
+      .fw-track { display:flex; gap:24px; align-items:center; }
+      .featured-card { border-radius:32px; overflow:hidden; transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease; }
+      .featured-card .fc-thumb { position:relative; width:100%; height:100%; }
+      .fw-slide { flex:0 0 440px; }
+      .fw-slide .featured-card { width:440px; height:560px; }
+      .fw-slide.inactive-slide .featured-card { opacity:0.25; transform:scale(.96); }
+      .fc-thumb .fc-play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+      .fc-play-btn { width:72px; height:72px; background:rgba(255,255,255,0.18); backdrop-filter:blur(12px); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.15); }
+      .featured-card .p-5 { position:absolute; bottom:36px; left:32px; right:32px; text-align:left; }
+      .featured-card .p-5 .text-xs { display:inline-block; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:12px; }
+      .featured-card .p-5 .text-base { font-size:28px; font-weight:700; color:#fff; margin:0; }
+      /* Side card responsive sizes */
+      @media (max-width:992px){ .fw-slide{ flex:0 0 360px } .fw-slide .featured-card{ width:360px;height:480px } }
+      @media (max-width:640px){ .fw-slide{ flex:0 0 320px } .fw-slide .featured-card{ width:320px;height:440px } }
+      /* Carousel control styles */
+      .control-btn{ width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none }
+      .btn-active{ background:#2e1a47;color:#a855f7;border:1px solid rgba(168,85,247,0.35) }
+      .btn-inactive{ background:#111;color:#555;border:1px solid #222 }
+      .carousel-controls{ display:flex;justify-content:center;gap:16px;margin-top:28px }
+      </style>
     </section>
 
     <!-- Video Modal -->

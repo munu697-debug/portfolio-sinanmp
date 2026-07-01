@@ -569,14 +569,22 @@
           return;
         }
         items.forEach((v, i) => {
-          const info = getVideoInfo(v.videoUrl || v.youtubeUrl);
+          // Normalize possible video url fields and id fallbacks
+          const rawUrl = v.videoUrl || v.youtubeUrl || v.url || v.src || '';
+          // Some admin entries may store a youtube id directly
+          const candidateId = v.youtubeId || v.ytId || v.youtube_id || v.yt || null;
+          const info = getVideoInfo(rawUrl || (candidateId ? `https://youtu.be/${candidateId}` : ''));
           const thumbClass = info.isVertical ? 'portrait' : 'landscape';
           const slide = document.createElement('div');
           slide.className = 'fw-slide';
           slide.setAttribute('data-idx', i);
           
           let thumbnailHtml = '';
-          if (info.type === 'youtube' && info.id) {
+          // Prefer explicit thumbnail fields if set by admin
+          const explicitThumb = v.thumbnail || v.thumb || v.poster || v.image || v.posterUrl || v.preview;
+          if (explicitThumb) {
+            thumbnailHtml = `<img src="${esc(explicitThumb)}" class="w-full h-full object-cover" alt="${esc(v.title)}" loading="lazy">`;
+          } else if (info.type === 'youtube' && info.id) {
             thumbnailHtml = `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" class="w-full h-full object-cover" alt="${esc(v.title)}" loading="lazy">`;
           } else if (info.type === 'instagram' && info.id) {
             thumbnailHtml = `
@@ -592,6 +600,17 @@
                 <span class="text-xs uppercase tracking-wider">No Video</span>
               </div>
             `;
+          }
+
+          // If we still have no explicit thumbnail and no known provider, fallback to profile image
+          if (!explicitThumb && info.type === 'unknown') {
+            // use site profile as safe fallback
+            thumbnailHtml = `<img src="image/profile.png" class="w-full h-full object-cover" alt="${esc(v.title || 'Work')}" loading="lazy">`;
+          }
+
+          // Debug log if essential fields are missing
+          if (!v.title || !(rawUrl || candidateId || explicitThumb)) {
+            console.debug('Carousel: missing fields for item', i, { title: v.title, url: rawUrl || candidateId, thumbnail: explicitThumb });
           }
           
           slide.innerHTML = `
@@ -621,7 +640,8 @@
           }
 
           // play button on card — scroll into view and open modal
-          const playBtn = slide.querySelector('.fc-play-btn');
+          // defensive selector: play button might have either class
+          const playBtn = slide.querySelector('.fc-play-btn, .play-btn-main');
           if (playBtn) {
             playBtn.addEventListener('click', (e) => {
               e.stopPropagation();

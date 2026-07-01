@@ -4,7 +4,13 @@
     { "src": "new-portfolio/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "\\/(.*)", "dest": "/new-portfolio/index.html" }
+    { "src": "^/admin\\.html$", "dest": "/new-portfolio/admin.html" },
+    { "src": "^/dashboard\\.html$", "dest": "/new-portfolio/dashboard.html" },
+    { "src": "^/works\\.html$", "dest": "/new-portfolio/works.html" },
+    { "src": "^/image/(.*)$", "dest": "/new-portfolio/image/$1" },
+    { "src": "^/js/(.*)$", "dest": "/new-portfolio/js/$1" },
+    { "src": "^/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|webmanifest|json|txt))$", "dest": "/new-portfolio/$1" },
+    { "src": "^/$", "dest": "/new-portfolio/index.html" },
+    { "src": "^/(.*)$", "dest": "/new-portfolio/index.html" }
   ]
 }

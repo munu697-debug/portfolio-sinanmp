@@ -610,7 +610,10 @@
         // Click handler: active opens modal, adjacent centers that slide
         track.querySelectorAll('.project-card, .featured-card').forEach(card => {
           card.addEventListener('click', (e) => {
-            const idx = +card.dataset.idx;
+            // dataset idx may live on the parent .fw-slide — find it
+            const slideEl = card.closest('.fw-slide');
+            const idx = slideEl ? +slideEl.dataset.idx : +card.dataset.idx;
+            if (Number.isNaN(idx)) return;
             if (idx === carouselIdx) {
               openModal(carouselItems[idx]);
             } else {
@@ -638,9 +641,13 @@
         const slideW = slides[0].offsetWidth;
         const gap = 24; // matches CSS gap
         
-        // Calculate offset to center active slide
-        const offsetX = (containerW / 2) - (carouselIdx * (slideW + gap) + (slideW / 2));
-        track.style.transform = `translateX(${offsetX}px)`;
+        // Calculate offset to center active slide using element positions (robust to margins)
+        const activeSlide = slides[carouselIdx];
+        if (activeSlide) {
+          const slideCenter = activeSlide.offsetLeft + (activeSlide.offsetWidth / 2);
+          const offsetX = (containerW / 2) - slideCenter;
+          track.style.transform = `translateX(${offsetX}px)`;
+        }
         
         // Toggle active/inactive slide classes
         slides.forEach((slide, i) => {

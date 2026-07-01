@@ -589,7 +589,7 @@
 
           // dot
           const dot = document.createElement('div');
-          dot.className = 'fw-dot' + (i === 0 ? ' active' : '');
+          dot.className = 'fw-dot' + (i === carouselIdx ? ' active' : '');
           dot.addEventListener('click', () => goSlide(i));
           dots.appendChild(dot);
 
@@ -729,7 +729,7 @@
         });
       }
 
-      watchRtdb(RTDB_PATHS.videos, (data) => { renderFeatured(data); }, []);
+      watchRtdb(RTDB_PATHS.videos, (data) => { console.debug('RTDB videos callback', data); renderFeatured(data); }, []);
       watchRtdb(RTDB_PATHS.testimonials, (data) => { renderTestimonials(data); }, []);
     </script>
 </body>

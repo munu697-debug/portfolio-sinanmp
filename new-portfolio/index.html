@@ -550,9 +550,22 @@
       let carouselIdx = 0;
 
       function getFeaturedItems(videos) {
-        let featured = videos.filter(v => v.featured);
-        if (featured.length === 0) featured = [...videos];
-        featured.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        const list = Array.isArray(videos) ? videos : [];
+        const prioritized = [...list].sort((a, b) => {
+          const aIsReel = /instagram|youtube|youtu\.be|youtube\.com|shorts/i.test(String(a.videoUrl || a.youtubeUrl || a.url || a.src || ''));
+          const bIsReel = /instagram|youtube|youtu\.be|youtube\.com|shorts/i.test(String(b.videoUrl || b.youtubeUrl || b.url || b.src || ''));
+          if (aIsReel !== bIsReel) return aIsReel ? -1 : 1;
+          return (a.order ?? 0) - (b.order ?? 0);
+        });
+
+        let featured = prioritized.filter(v => v.featured);
+        if (featured.length === 0) featured = prioritized;
+        featured.sort((a, b) => {
+          const aIsReel = /instagram|youtube|youtu\.be|youtube\.com|shorts/i.test(String(a.videoUrl || a.youtubeUrl || a.url || a.src || ''));
+          const bIsReel = /instagram|youtube|youtu\.be|youtube\.com|shorts/i.test(String(b.videoUrl || b.youtubeUrl || b.url || b.src || ''));
+          if (aIsReel !== bIsReel) return aIsReel ? -1 : 1;
+          return (a.order ?? 0) - (b.order ?? 0);
+        });
         return featured.slice(0, 4);
       }
 

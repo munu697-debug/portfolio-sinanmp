@@ -336,21 +336,22 @@
 
       <style>
       /* Scoped work-section styles (won't affect other sections) */
-      .work-section { background-color: #0a0710; color:#fff; padding:72px 24px; text-align:center; font-family:inherit; overflow:visible; }
+      .work-section { width:100%; max-width:100%; background-color: #0a0710; color:#fff; padding:96px 16px 112px; margin: 28px 0 72px; text-align:center; font-family:inherit; overflow:visible; }
       .work-section .section-tag { text-transform:uppercase; letter-spacing:0.15em; color:#a855f7; font-size:14px; font-weight:600; margin-bottom:14px; }
-      .work-section .section-title { font-size:42px; font-weight:700; max-width:1100px; margin:0 auto 34px auto; line-height:1.05; }
-      .projects-carousel { position:relative; display:flex; justify-content:center; align-items:center; gap:24px; max-width:1200px; margin:0 auto; padding:20px 0; height:540px; }
+      .work-section .section-title { font-size:clamp(28px, 3.2vw, 42px); font-weight:700; max-width:1100px; margin:0 auto 34px auto; line-height:1.05; }
+      .projects-carousel { position:relative; display:flex; justify-content:center; align-items:center; gap:24px; width:100%; max-width:100%; margin:0 auto; padding:20px 0 8px; height:560px; }
       .projects-carousel .control-btn { position:absolute; top:50%; transform:translateY(-50%); z-index:50; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
       #fwPrev { left: 24px; } #fwNext { right: 24px; }
       .carousel-controls { display:none; }
       .fw-carousel-inner { width:100%; display:flex; align-items:center; justify-content:center; overflow:visible; }
-      .fw-track { display:flex; gap:36px; align-items:center; height:100%; transition:transform .6s cubic-bezier(.16,1,.3,1); padding:0 40px; }
-      .fw-slide { flex: 0 0 min(460px, 46%); display:flex; align-items:center; justify-content:center; transition:transform .45s ease, opacity .45s ease, filter .45s ease; }
-      @media (max-width:1024px){ .fw-slide{ flex:0 0 380px } .projects-carousel{height:460px} }
-      @media (max-width:640px){ .fw-slide{ flex:0 0 300px } .projects-carousel{height:360px} }
+      .fw-track { display:flex; gap:20px; align-items:center; height:100%; transition:transform .6s cubic-bezier(.16,1,.3,1); padding:0 24px; }
+      .fw-slide { flex: 0 0 min(320px, 76vw); display:flex; align-items:center; justify-content:center; transition:transform .45s ease, opacity .45s ease, filter .45s ease; }
+      @media (max-width:1024px){ .fw-slide{ flex:0 0 min(300px, 74vw) } .projects-carousel{height:500px} }
+      @media (max-width:640px){ .fw-slide{ flex:0 0 min(280px, 78vw) } .projects-carousel{height:440px} }
 
       /* card visuals */
-      .card-image-wrapper { width:100%; height:100%; max-width:460px; max-height:520px; border-radius:28px; overflow:hidden; position:relative; background:#000; display:block; box-shadow:0 20px 60px rgba(0,0,0,0.6); transition:transform .5s cubic-bezier(.16,1,.3,1), filter .45s ease, opacity .45s ease; }
+      .project-card { width:100%; max-width:320px; }
+      .card-image-wrapper { width:100%; height:500px; max-width:320px; max-height:500px; border-radius:24px; overflow:hidden; position:relative; background:#000; display:block; box-shadow:0 20px 60px rgba(0,0,0,0.6); transition:transform .5s cubic-bezier(.16,1,.3,1), filter .45s ease, opacity .45s ease; }
       .card-image-wrapper img, .card-image-wrapper iframe, .card-image-wrapper video { width:100%; height:100%; object-fit:cover; display:block; }
       .card-overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.5) 100%); pointer-events:none; }
       .play-btn-main { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:84px; height:84px; border-radius:50%; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:30; transition:transform .28s, background .28s; }
@@ -363,8 +364,8 @@
       .fw-slide.inactive-slide .card-image-wrapper { transform: scale(.88); filter: blur(4px) saturate(.8) contrast(.9) grayscale(.05); opacity:0.55; }
       .fw-slide.active-slide .card-image-wrapper { transform: scale(1.02); filter: none; opacity:1; }
       .fw-dot{ display:none }
-      .fw-slide { flex:0 0 min(440px, 46%); }
-      .fw-slide .featured-card { width:100%; height:100%; max-width:440px; max-height:560px; }
+      .fw-slide { flex:0 0 min(320px, 76vw); }
+      .fw-slide .featured-card { width:100%; height:100%; max-width:320px; max-height:500px; }
       .fw-slide.inactive-slide .featured-card { opacity:0.25; transform:scale(.96); }
       .fc-thumb .fc-play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
       .fc-play-btn { width:72px; height:72px; background:rgba(255,255,255,0.18); backdrop-filter:blur(12px); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.15); }
@@ -372,8 +373,8 @@
       .featured-card .p-5 .text-xs { display:inline-block; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:12px; }
       .featured-card .p-5 .text-base { font-size:28px; font-weight:700; color:#fff; margin:0; }
       /* Side card responsive sizes */
-      @media (max-width:992px){ .fw-slide{ flex:0 0 360px } .fw-slide .featured-card{ width:360px;height:480px } }
-      @media (max-width:640px){ .fw-slide{ flex:0 0 320px } .fw-slide .featured-card{ width:320px;height:440px } }
+      @media (max-width:992px){ .fw-slide{ flex:0 0 min(300px, 74vw) } .fw-slide .featured-card{ width:100%;height:100%; max-width:300px;max-height:470px } .card-image-wrapper { height:470px; max-height:470px; } }
+      @media (max-width:640px){ .fw-slide{ flex:0 0 min(280px, 78vw) } .fw-slide .featured-card{ width:100%;height:100%; max-width:280px;max-height:440px } .card-image-wrapper { height:440px; max-height:440px; } }
       /* Carousel control styles */
       .control-btn{ width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none }
       .btn-active{ background:#2e1a47;color:#a855f7;border:1px solid rgba(168,85,247,0.35) }
@@ -552,23 +553,24 @@
         let featured = videos.filter(v => v.featured);
         if (featured.length === 0) featured = [...videos];
         featured.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        return featured.slice(0, 6);
+        return featured.slice(0, 4);
       }
 
       function buildCarousel(items) {
-        carouselItems = items;
+        const visibleItems = (items || []).slice(0, 4);
+        carouselItems = visibleItems;
         // Auto-center the most recently uploaded video (assume newest is last)
-        carouselIdx = Math.max(0, items.length - 1);
+        carouselIdx = Math.max(0, visibleItems.length - 1);
         const track = document.getElementById('fwTrack');
         const dots  = document.getElementById('fwDots');
         if (!track) return;
         track.innerHTML = '';
         if (dots) dots.innerHTML  = '';
-        if (items.length === 0) {
+        if (visibleItems.length === 0) {
           track.innerHTML = '<div class="text-center text-gray-500 py-16 w-full">No featured works yet.</div>';
           return;
         }
-        items.forEach((v, i) => {
+        visibleItems.forEach((v, i) => {
           // Normalize possible video url fields and id fallbacks
           const rawUrl = v.videoUrl || v.youtubeUrl || v.url || v.src || '';
           // Some admin entries may store a youtube id directly
@@ -743,8 +745,8 @@
       document.getElementById('videoModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-      // Render all uploaded videos in the carousel (use all videos from admin panel)
-      function renderFeatured(videos) { buildCarousel(videos || []); }
+      // Render a small reel-style set of videos from the admin panel.
+      function renderFeatured(videos) { buildCarousel(getFeaturedItems(videos || [])); }
 
       function renderTestimonials(items) {
         const grid = document.getElementById('testimonialsGrid');

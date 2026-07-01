@@ -1,0 +1,8 @@
+{
+  "name": "portfolio-sinanmp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "rm -rf /vercel/output && mkdir -p /vercel/output && cp -r new-portfolio/* /vercel/output/ || true"
+  }
+}

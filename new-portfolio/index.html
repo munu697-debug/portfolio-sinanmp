@@ -543,6 +543,7 @@
           const thumbClass = info.isVertical ? 'portrait' : 'landscape';
           const slide = document.createElement('div');
           slide.className = 'fw-slide';
+          slide.setAttribute('data-idx', i);
           
           let thumbnailHtml = '';
           if (info.type === 'youtube' && info.id) {
@@ -564,22 +565,19 @@
           }
           
           slide.innerHTML = `
-            <div class="featured-card" data-idx="${i}">
-              <div class="fc-thumb ${thumbClass}">
+            <div class="project-card" data-idx="${i}">
+              <div class="card-image-wrapper">
                 ${thumbnailHtml}
+                <div class="card-overlay"></div>
                 <div class="fc-play-overlay">
-                  <div class="fc-play-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <div class="play-btn-main fc-play-btn" aria-label="Play">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff"><path d="M8 5v14l11-7z"/></svg>
                   </div>
                 </div>
-              </div>
-              <div class="p-5">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-xs font-semibold bg-purple-600/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">${esc(v.category || '')}</span>
-                  ${v.featured ? '<span class="text-xs font-semibold bg-white/10 text-white px-2 py-0.5 rounded">Featured</span>' : ''}
-                  ${info.isVertical ? '<span class="text-xs font-semibold bg-indigo-600/20 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded">Short</span>' : ''}
+                <div class="card-content">
+                  <span class="card-tag">${esc(v.category || '')}</span>
+                  <h3 class="card-project-title">${esc(v.title)}</h3>
                 </div>
-                <h3 class="text-base font-semibold text-white leading-snug">${esc(v.title)}</h3>
               </div>
             </div>`;
           track.appendChild(slide);
@@ -589,10 +587,23 @@
           dot.className = 'fw-dot' + (i === 0 ? ' active' : '');
           dot.addEventListener('click', () => goSlide(i));
           dots.appendChild(dot);
+
+          // play button on card — scroll into view and open modal
+          const playBtn = slide.querySelector('.fc-play-btn');
+          if (playBtn) {
+            playBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = +slide.dataset.idx;
+              goSlide(idx);
+              const wrap = document.getElementById('fwCarouselWrap');
+              if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              setTimeout(() => openModal(carouselItems[idx]), 300);
+            });
+          }
         });
 
         // Click handler: active opens modal, adjacent centers that slide
-        track.querySelectorAll('.featured-card').forEach(card => {
+        track.querySelectorAll('.project-card, .featured-card').forEach(card => {
           card.addEventListener('click', (e) => {
             const idx = +card.dataset.idx;
             if (idx === carouselIdx) {
@@ -643,6 +654,8 @@
 
       document.getElementById('fwPrev')?.addEventListener('click', () => goSlide(carouselIdx - 1));
       document.getElementById('fwNext')?.addEventListener('click', () => goSlide(carouselIdx + 1));
+      document.getElementById('ctrlPrev')?.addEventListener('click', () => goSlide(carouselIdx - 1));
+      document.getElementById('ctrlNext')?.addEventListener('click', () => goSlide(carouselIdx + 1));
       window.addEventListener('resize', updateCarousel);
 
       /* ── Modal ── */

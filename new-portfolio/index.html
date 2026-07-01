@@ -750,6 +750,18 @@
       }
 
       watchRtdb(RTDB_PATHS.videos, (data) => { console.debug('RTDB videos callback', data); renderFeatured(data); }, []);
+      // Temporary diagnostic: try REST GET to the RTDB path to verify public accessibility
+      (function debugRestFetch(){
+        const url = 'https://sinan-portfolio-705a2-default-rtdb.asia-southeast1.firebasedatabase.app' + RTDB_PATHS.videos + '.json';
+        console.debug('RTDB debug: REST GET', url);
+        fetch(url, { method: 'GET' })
+          .then(async (res) => {
+            let body;
+            try { body = await res.json(); } catch (e) { body = null; }
+            console.debug('RTDB debug: REST response', res.status, body);
+          })
+          .catch(err => console.error('RTDB debug: REST error', err));
+      })();
       watchRtdb(RTDB_PATHS.testimonials, (data) => { renderTestimonials(data); }, []);
     </script>
 </body>

@@ -141,8 +141,9 @@
         /* ── Featured Work Carousel ── */
         .fw-carousel-wrap { position: relative; width: 100%; overflow: hidden; }
         .fw-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; align-items: center; padding: 30px 0; }
-        .fw-slide { flex: 0 0 310px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity, filter; }
-        @media (max-width: 640px) { .fw-slide { flex: 0 0 270px; } }
+        .fw-slide { flex: 0 0 420px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity, filter; }
+        @media (max-width: 1024px) { .fw-slide { flex: 0 0 360px; } }
+        @media (max-width: 640px) { .fw-slide { flex: 0 0 320px; } }
         .featured-card { 
             background: rgba(255,255,255,0.02); 
             border: 1px solid rgba(255,255,255,0.06); 
@@ -646,7 +647,8 @@
       document.getElementById('videoModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-      function renderFeatured(videos) { buildCarousel(getFeaturedItems(videos)); }
+      // Render all uploaded videos in the carousel (use all videos from admin panel)
+      function renderFeatured(videos) { buildCarousel(videos || []); }
 
       function renderTestimonials(items) {
         const grid = document.getElementById('testimonialsGrid');

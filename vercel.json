@@ -1,16 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "new-portfolio/**", "use": "@vercel/static" }
-  ],
   "routes": [
-    { "src": "^/admin(?:\\.html)?$", "dest": "/new-portfolio/admin.html" },
-    { "src": "^/dashboard(?:\\.html)?$", "dest": "/new-portfolio/dashboard.html" },
-    { "src": "^/works(?:\\.html)?$", "dest": "/new-portfolio/works.html" },
-    { "src": "^/image/(.*)$", "dest": "/new-portfolio/image/$1" },
-    { "src": "^/js/(.*)$", "dest": "/new-portfolio/js/$1" },
-    { "src": "^/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|webmanifest|json|txt))$", "dest": "/new-portfolio/$1" },
-    { "src": "^/$", "dest": "/new-portfolio/index.html" },
-    { "src": "^/(.*)$", "dest": "/new-portfolio/index.html" }
+    { "src": "^/admin(?:\\.html)?$", "dest": "/admin.html" },
+    { "src": "^/dashboard(?:\\.html)?$", "dest": "/dashboard.html" },
+    { "src": "^/works(?:\\.html)?$", "dest": "/works.html" },
+    { "src": "^/image/(.*)$", "dest": "/image/$1" },
+    { "src": "^/js/(.*)$", "dest": "/js/$1" },
+    { "src": "^/(.*\\.(?:css|js|png|jpg|jpeg|svg|ico|webmanifest|json|txt))$", "dest": "/$1" },
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/(.*)$", "dest": "/index.html" }
   ]
 }

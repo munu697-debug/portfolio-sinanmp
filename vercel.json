@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": ".",
   "routes": [
     { "src": "^/admin(?:\\.html)?$", "dest": "/admin.html" },
     { "src": "^/dashboard(?:\\.html)?$", "dest": "/dashboard.html" },

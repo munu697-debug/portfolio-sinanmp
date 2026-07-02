@@ -1,0 +1,1 @@
+Replaced visible branding 'Ajzal' / 'AJZAL' with 'SINAN.MP' in new-portfolio HTML files.

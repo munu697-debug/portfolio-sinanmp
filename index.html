@@ -303,83 +303,84 @@
     </section>
 
     <section id="work" class="work-section reveal">
-      <p class="section-tag">WORK</p>
-      <h2 class="section-title">Explore our video editing work and projects</h2>
-
-      <div class="projects-carousel" id="fwCarouselWrap">
-        <button class="control-btn btn-active" id="fwPrev" aria-label="Previous">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        </button>
-
-        <div class="fw-carousel-inner" style="display:flex;align-items:center;gap:24px;overflow:visible;">
-          <div class="fw-track" id="fwTrack"></div>
+      <div class="work-hero">
+        <div class="work-eyebrow">• WORK</div>
+        <h2 class="work-title">Explore our video editing work and projects</h2>
+        
+        <div class="carousel-wrapper">
+          <button class="carousel-nav carousel-nav-prev" id="workPrev" aria-label="Previous work">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <div class="carousel-stage" id="workCarouselStage"></div>
+          
+          <button class="carousel-nav carousel-nav-next" id="workNext" aria-label="Next work">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
-
-          <!-- dots (pagination) -->
-          <div style="position:relative;width:100%;margin-top:18px;display:flex;justify-content:center;">
-            <div class="fw-dots" id="fwDots"></div>
-          </div>
-
-        <button class="control-btn btn-inactive" id="fwNext" aria-label="Next">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
-      </div>
-
-      <div class="carousel-controls">
-        <button class="control-btn btn-active" id="ctrlPrev" aria-label="Previous small">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        </button>
-        <button class="control-btn btn-inactive" id="ctrlNext" aria-label="Next small">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
       </div>
 
       <style>
-      /* Scoped work-section styles (won't affect other sections) */
-      .work-section { width:100%; max-width:100%; background-color: #0a0710; color:#fff; padding:96px 16px 112px; margin: 28px 0 72px; text-align:center; font-family:inherit; overflow:visible; }
-      .work-section .section-tag { text-transform:uppercase; letter-spacing:0.15em; color:#a855f7; font-size:14px; font-weight:600; margin-bottom:14px; }
-      .work-section .section-title { font-size:clamp(28px, 3.2vw, 42px); font-weight:700; max-width:1100px; margin:0 auto 34px auto; line-height:1.05; }
-      .projects-carousel { position:relative; display:flex; justify-content:center; align-items:center; gap:24px; width:100%; max-width:100%; margin:0 auto; padding:20px 0 8px; height:560px; }
-      .projects-carousel .control-btn { position:absolute; top:50%; transform:translateY(-50%); z-index:50; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-      #fwPrev { left: 24px; } #fwNext { right: 24px; }
-      .carousel-controls { display:none; }
-      .fw-carousel-inner { width:100%; display:flex; align-items:center; justify-content:center; overflow:visible; }
-      .fw-track { display:flex; gap:20px; align-items:center; height:100%; transition:transform .6s cubic-bezier(.16,1,.3,1); padding:0 24px; }
-      .fw-slide { flex: 0 0 min(320px, 76vw); display:flex; align-items:center; justify-content:center; transition:transform .45s ease, opacity .45s ease, filter .45s ease; }
-      @media (max-width:1024px){ .fw-slide{ flex:0 0 min(300px, 74vw) } .projects-carousel{height:500px} }
-      @media (max-width:640px){ .fw-slide{ flex:0 0 min(280px, 78vw) } .projects-carousel{height:440px} }
-
-      /* card visuals */
-      .project-card { width:100%; max-width:320px; }
-      .card-image-wrapper { width:100%; height:500px; max-width:320px; max-height:500px; border-radius:24px; overflow:hidden; position:relative; background:#000; display:block; box-shadow:0 20px 60px rgba(0,0,0,0.6); transition:transform .5s cubic-bezier(.16,1,.3,1), filter .45s ease, opacity .45s ease; }
-      .card-image-wrapper img, .card-image-wrapper iframe, .card-image-wrapper video { width:100%; height:100%; object-fit:cover; display:block; }
-      .card-overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.5) 100%); pointer-events:none; }
-      .play-btn-main { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:84px; height:84px; border-radius:50%; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:30; transition:transform .28s, background .28s; }
-      .play-btn-main svg{ width:36px; height:36px; opacity:0.95 }
-      .card-content { position:absolute; left:20px; bottom:22px; right:20px; text-align:left; z-index:35; }
-      .card-tag{ display:inline-block; background:#7c3aed; color:#fff; padding:6px 10px; border-radius:12px; font-size:12px; font-weight:700; margin-bottom:10px; }
-      .card-project-title{ font-size:20px; font-weight:800; color:#fff; margin:0; }
-
-      /* center vs side styling */
-      .fw-slide.inactive-slide .card-image-wrapper { transform: scale(.88); filter: blur(4px) saturate(.8) contrast(.9) grayscale(.05); opacity:0.55; }
-      .fw-slide.active-slide .card-image-wrapper { transform: scale(1.02); filter: none; opacity:1; }
-      .fw-dot{ display:none }
-      .fw-slide { flex:0 0 min(320px, 76vw); }
-      .fw-slide .featured-card { width:100%; height:100%; max-width:320px; max-height:500px; }
-      .fw-slide.inactive-slide .featured-card { opacity:0.25; transform:scale(.96); }
-      .fc-thumb .fc-play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-      .fc-play-btn { width:72px; height:72px; background:rgba(255,255,255,0.18); backdrop-filter:blur(12px); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.15); }
-      .featured-card .p-5 { position:absolute; bottom:36px; left:32px; right:32px; text-align:left; }
-      .featured-card .p-5 .text-xs { display:inline-block; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:12px; }
-      .featured-card .p-5 .text-base { font-size:28px; font-weight:700; color:#fff; margin:0; }
-      /* Side card responsive sizes */
-      @media (max-width:992px){ .fw-slide{ flex:0 0 min(300px, 74vw) } .fw-slide .featured-card{ width:100%;height:100%; max-width:300px;max-height:470px } .card-image-wrapper { height:470px; max-height:470px; } }
-      @media (max-width:640px){ .fw-slide{ flex:0 0 min(280px, 78vw) } .fw-slide .featured-card{ width:100%;height:100%; max-width:280px;max-height:440px } .card-image-wrapper { height:440px; max-height:440px; } }
-      /* Carousel control styles */
-      .control-btn{ width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none }
-      .btn-active{ background:#2e1a47;color:#a855f7;border:1px solid rgba(168,85,247,0.35) }
-      .btn-inactive{ background:#111;color:#555;border:1px solid #222 }
-      .carousel-controls{ display:flex;justify-content:center;gap:16px;margin-top:28px }
+        /* Work Section Styles - Isolated */
+        .work-section { width:100%; background-color: transparent; padding:80px 16px 100px; margin:20px 0 60px; text-align:center; overflow:visible; }
+        .work-hero { position:relative; }
+        .work-eyebrow { display:inline-flex; align-items:center; gap:0.5rem; padding:0.4rem 0.8rem; border-radius:999px; border:1px solid rgba(192,132,252,0.28); background:rgba(109,40,217,0.14); color:#c084fc; font-size:0.7rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1rem; }
+        .work-eyebrow::before { content:''; width:0.5rem; height:0.5rem; border-radius:999px; background:#a855f7; box-shadow:0 0 0.6rem rgba(168,85,247,0.8); display:inline-block; margin-right:0.2rem; }
+        .work-title { max-width:900px; margin:0 auto 2rem; font-size:clamp(1.8rem, 3.2vw, 3rem); line-height:1.1; font-weight:800; letter-spacing:-0.03em; color:#f9fafb; }
+        
+        .carousel-wrapper { position:relative; max-width:1000px; margin:2rem auto 0; padding:0 24px; }
+        .carousel-stage { position:relative; display:flex; align-items:center; justify-content:center; min-height:clamp(16rem, 50vw, 28rem); }
+        
+        .carousel-card { position:absolute; width:min(92%, 300px); border-radius:24px; overflow:hidden; background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)); border:1px solid rgba(255,255,255,0.09); box-shadow:0 20px 60px rgba(0,0,0,0.45); transition:transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease; }
+        .carousel-card-left { left:1rem; transform:scale(0.85); opacity:0.65; z-index:1; filter:saturate(0.8); }
+        .carousel-card-center { left:50%; transform:translateX(-50%) scale(1.03); z-index:3; box-shadow:0 24px 80px rgba(109,40,217,0.26); }
+        .carousel-card-right { right:1rem; transform:scale(0.85); opacity:0.65; z-index:1; filter:saturate(0.8); }
+        
+        .card-media { position:relative; aspect-ratio:16/9; background:#000; overflow:hidden; }
+        .card-media img, .card-media .media-placeholder { width:100%; height:100%; object-fit:cover; display:block; }
+        .media-placeholder { display:flex; align-items:center; justify-content:center; flex-direction:column; color:#f3e8ff; background:radial-gradient(circle at top, rgba(167,139,250,0.24), rgba(3,0,20,1)); gap:0.5rem; font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; }
+        .card-iframe-wrap { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity 0.3s ease; background:#000; }
+        .card-iframe-wrap iframe { width:100%; height:100%; border:0; }
+        .carousel-card.is-playing .card-iframe-wrap { opacity:1; pointer-events:auto; }
+        .carousel-card.is-playing .card-media img, .carousel-card.is-playing .card-media .media-placeholder { opacity:0; }
+        
+        .play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border:0; background:transparent; cursor:pointer; z-index:2; }
+        .play-btn { width:clamp(2.8rem, 5vw, 3.5rem); height:clamp(2.8rem, 5vw, 3.5rem); border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; transition:transform 0.25s ease, background 0.25s ease; }
+        .play-overlay:hover .play-btn { transform:scale(1.08); background:rgba(168,85,247,0.7); border-color:#d8b4fe; }
+        .play-icon { width:20px; height:20px; color:#fff; margin-left:2px; }
+        
+        .card-body { padding:1rem; background:rgba(5,5,13,0.95); }
+        .card-badge { display:inline-block; padding:0.28rem 0.6rem; border-radius:999px; font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#f5e8ff; background:rgba(168,85,247,0.18); border:1px solid rgba(192,132,252,0.24); margin-bottom:0.4rem; }
+        .card-title { font-size:0.95rem; font-weight:700; color:#f9fafb; line-height:1.35; margin:0; }
+        
+        .carousel-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:4; width:2.8rem; height:2.8rem; border-radius:999px; border:1px solid rgba(255,255,255,0.16); background:rgba(90,38,180,0.38); color:#f5f3ff; backdrop-filter:blur(12px); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.2s ease, background 0.2s ease; }
+        .carousel-nav:hover, .carousel-nav:focus { transform:translateY(-50%) scale(1.04); background:rgba(109,40,217,0.5); outline:none; }
+        .carousel-nav-prev { left:0; }
+        .carousel-nav-next { right:0; }
+        
+        @media (max-width:900px) {
+          .carousel-card-left, .carousel-card-right { display:none; }
+          .carousel-card-center { position:relative; left:auto; transform:none; width:min(92%, 360px); }
+          .carousel-nav-prev { left:0.5rem; }
+          .carousel-nav-next { right:0.5rem; }
+        }
+        @media (max-width:640px) {
+          .work-section { padding:60px 12px 80px; margin:0; }
+          .work-title { font-size:clamp(1.5rem, 2.8vw, 2.2rem); margin-bottom:1.5rem; }
+          .carousel-wrapper { padding:0 8px; }
+          .carousel-stage { min-height:clamp(14rem, 70vw, 20rem); }
+          .carousel-card-center { width:min(95%, 100%); }
+          .carousel-nav { width:2.4rem; height:2.4rem; top:auto; bottom:-0.5rem; transform:none; }
+          .carousel-nav-prev { left:calc(50% - 3.2rem); }
+          .carousel-nav-next { right:calc(50% - 3.2rem); }
+          .card-body { padding:0.8rem; }
+          .card-badge { font-size:0.65rem; padding:0.25rem 0.5rem; }
+          .card-title { font-size:0.85rem; }
+        }
       </style>
     </section>
 
@@ -570,167 +571,118 @@
       }
 
       function buildCarousel(items) {
-        const visibleItems = (items || []).slice(0, 4);
+        const visibleItems = (items || []).slice(0, 6);
         carouselItems = visibleItems;
-        // Auto-center the most recently uploaded video (assume newest is last)
-        carouselIdx = Math.max(0, visibleItems.length - 1);
-        const track = document.getElementById('fwTrack');
-        const dots  = document.getElementById('fwDots');
-        if (!track) return;
-        track.innerHTML = '';
-        if (dots) dots.innerHTML  = '';
-        if (visibleItems.length === 0) {
-          track.innerHTML = '<div class="text-center text-gray-500 py-16 w-full">No featured works yet.</div>';
+        carouselIdx = 0;
+        renderWorkCarousel();
+      }
+
+      function renderWorkCarousel() {
+        const stage = document.getElementById('workCarouselStage');
+        if (!stage) return;
+        
+        if (carouselItems.length === 0) {
+          stage.innerHTML = '<div style="min-height:14rem; display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:15px">No featured works yet.</div>';
           return;
         }
-        visibleItems.forEach((v, i) => {
-          // Normalize possible video url fields and id fallbacks
-          const rawUrl = v.videoUrl || v.youtubeUrl || v.url || v.src || '';
-          // Some admin entries may store a youtube id directly
-          const candidateId = v.youtubeId || v.ytId || v.youtube_id || v.yt || null;
-          const info = getVideoInfo(rawUrl || (candidateId ? `https://youtu.be/${candidateId}` : ''));
-          const thumbClass = info.isVertical ? 'portrait' : 'landscape';
-          const slide = document.createElement('div');
-          slide.className = 'fw-slide';
-          slide.setAttribute('data-idx', i);
-          
-          let thumbnailHtml = '';
-          // Prefer explicit thumbnail fields if set by admin
-          const explicitThumb = v.thumbnail || v.thumb || v.poster || v.image || v.posterUrl || v.preview;
-          if (explicitThumb) {
-            thumbnailHtml = `<img src="${esc(explicitThumb)}" class="w-full h-full object-cover" alt="${esc(v.title)}" loading="lazy">`;
-          } else if (info.type === 'youtube' && info.id) {
-            thumbnailHtml = `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" class="w-full h-full object-cover" alt="${esc(v.title)}" loading="lazy">`;
-          } else if (info.type === 'instagram' && info.id) {
-            thumbnailHtml = `
-              <div class="w-full h-full flex flex-col items-center justify-center text-white gap-2" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);">
-                <i class="fa-brands fa-instagram text-4xl opacity-90 drop-shadow-md"></i>
-                <span class="text-[9px] uppercase tracking-widest font-bold opacity-80">Instagram Reel</span>
-              </div>
-            `;
-          } else {
-            thumbnailHtml = `
-              <div class="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-neutral-900 gap-1">
-                <i class="fa-solid fa-video text-2xl"></i>
-                <span class="text-xs uppercase tracking-wider">No Video</span>
-              </div>
-            `;
-          }
+        
+        stage.innerHTML = '';
+        const items = carouselItems;
+        
+        // Get previous, current, and next items for carousel
+        const prevItem = items[(carouselIdx - 1 + items.length) % items.length];
+        const activeItem = items[carouselIdx];
+        const nextItem = items[(carouselIdx + 1) % items.length];
+        
+        [prevItem, activeItem, nextItem].forEach((item, idx) => {
+          const position = idx === 0 ? 'left' : idx === 1 ? 'center' : 'right';
+          const card = createWorkCarouselCard(item, position);
+          stage.appendChild(card);
+        });
+      }
 
-          // If we still have no explicit thumbnail and no known provider, fallback to profile image
-          if (!explicitThumb && info.type === 'unknown') {
-            // use site profile as safe fallback
-            thumbnailHtml = `<img src="image/profile.png" class="w-full h-full object-cover" alt="${esc(v.title || 'Work')}" loading="lazy">`;
-          }
-
-          // Debug log if essential fields are missing
-          if (!v.title || !(rawUrl || candidateId || explicitThumb)) {
-            console.debug('Carousel: missing fields for item', i, { title: v.title, url: rawUrl || candidateId, thumbnail: explicitThumb });
-          }
-          
-          slide.innerHTML = `
-            <div class="project-card" data-idx="${i}">
-              <div class="card-image-wrapper">
-                ${thumbnailHtml}
-                <div class="card-overlay"></div>
-                <div class="fc-play-overlay">
-                  <div class="play-btn-main fc-play-btn" aria-label="Play">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff"><path d="M8 5v14l11-7z"/></svg>
-                  </div>
+      function createWorkCarouselCard(v, position) {
+        const info = getVideoInfo(v.videoUrl || v.youtubeUrl);
+        const isActive = position === 'center';
+        const title = esc(v.title || 'Featured work');
+        const category = esc(v.category || 'Creative');
+        const badge = info.isVertical ? 'Short' : 'Project';
+        
+        let thumbHtml = '';
+        if (info.type === 'youtube' && info.id) {
+          thumbHtml = `<img src="https://img.youtube.com/vi/${info.id}/hqdefault.jpg" alt="${title}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${info.id}/mqdefault.jpg'" style="width:100%; height:100%; object-fit:cover;">`;
+        } else if (info.type === 'instagram' && info.id) {
+          thumbHtml = `<div class="media-placeholder"><i class="fa-brands fa-instagram" style="font-size:1.6rem"></i><span>Instagram Reel</span></div>`;
+        } else {
+          thumbHtml = `<div class="media-placeholder"><i class="fa-solid fa-play" style="font-size:1.2rem"></i><span>Video</span></div>`;
+        }
+        
+        const embedSrc = info.type === 'youtube' && info.id ? `https://www.youtube.com/embed/${info.id}?autoplay=1&rel=0` : '';
+        
+        const card = document.createElement('div');
+        card.className = `carousel-card carousel-card-${position}`;
+        if (isActive) card.classList.add('is-active');
+        
+        card.innerHTML = `
+          <div class="card-media">
+            <div class="card-media-thumb">${thumbHtml}</div>
+            <div class="card-iframe-wrap">
+              <iframe src="${embedSrc}" title="${title}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            ${isActive ? `
+              <button class="play-overlay" type="button" aria-label="Play ${title}">
+                <div class="play-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="play-icon">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                 </div>
-                <div class="card-content">
-                  <span class="card-tag">${esc(v.category || '')}</span>
-                  <h3 class="card-project-title">${esc(v.title)}</h3>
-                </div>
-              </div>
-            </div>`;
-          track.appendChild(slide);
-
-          // dot
-          if (dots) {
-            const dot = document.createElement('div');
-            dot.className = 'fw-dot' + (i === carouselIdx ? ' active' : '');
-            dot.addEventListener('click', () => goSlide(i));
-            dots.appendChild(dot);
-          }
-
-          // play button on card — scroll into view and open modal
-          // defensive selector: play button might have either class
-          const playBtn = slide.querySelector('.fc-play-btn, .play-btn-main');
+              </button>
+            ` : ''}
+          </div>
+          <div class="card-body">
+            <div class="card-badge">${badge}</div>
+            <h3 class="card-title">${title}</h3>
+          </div>
+        `;
+        
+        if (isActive) {
+          const playBtn = card.querySelector('.play-overlay');
           if (playBtn) {
             playBtn.addEventListener('click', (e) => {
               e.stopPropagation();
-              const idx = +slide.dataset.idx;
-              goSlide(idx);
-              const wrap = document.getElementById('fwCarouselWrap');
-              if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              setTimeout(() => openModal(carouselItems[idx]), 300);
+              const isPlaying = card.classList.contains('is-playing');
+              const iframe = card.querySelector('iframe');
+              if (!iframe || !embedSrc) return;
+              
+              if (!isPlaying) {
+                iframe.src = embedSrc;
+              }
+              card.classList.toggle('is-playing', !isPlaying);
+              
+              const icon = playBtn.querySelector('.play-icon');
+              if (icon) {
+                if (isPlaying) {
+                  icon.innerHTML = '<path d="M8 5v14l11-7z" />';
+                } else {
+                  icon.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z" />';
+                }
+              }
             });
           }
-        });
-
-        // Click handler: active opens modal, adjacent centers that slide
-        track.querySelectorAll('.project-card, .featured-card').forEach(card => {
-          card.addEventListener('click', (e) => {
-            // dataset idx may live on the parent .fw-slide — find it
-            const slideEl = card.closest('.fw-slide');
-            const idx = slideEl ? +slideEl.dataset.idx : +card.dataset.idx;
-            if (Number.isNaN(idx)) return;
-            if (idx === carouselIdx) {
-              openModal(carouselItems[idx]);
-            } else {
-              goSlide(idx);
-            }
-          });
-        });
-
-        updateCarousel();
-      }
-
-      function goSlide(idx) {
-        carouselIdx = Math.max(0, Math.min(idx, carouselItems.length - 1));
-        updateCarousel();
-      }
-
-      function updateCarousel() {
-        const track = document.getElementById('fwTrack');
-        const dots  = document.querySelectorAll('.fw-dot');
-        if (!track) return;
-        const slides = track.querySelectorAll('.fw-slide');
-        if (slides.length === 0) return;
-        
-        const containerW = document.getElementById('fwCarouselWrap').offsetWidth;
-        const slideW = slides[0].offsetWidth;
-        const gap = 24; // matches CSS gap
-        
-        // Calculate offset to center active slide using element positions (robust to margins)
-        const activeSlide = slides[carouselIdx];
-        if (activeSlide) {
-          const slideCenter = activeSlide.offsetLeft + (activeSlide.offsetWidth / 2);
-          const offsetX = (containerW / 2) - slideCenter;
-          track.style.transform = `translateX(${offsetX}px)`;
         }
         
-        // Toggle active/inactive slide classes
-        slides.forEach((slide, i) => {
-          if (i === carouselIdx) {
-            slide.classList.add('active-slide');
-            slide.classList.remove('inactive-slide');
-          } else {
-            slide.classList.remove('active-slide');
-            slide.classList.add('inactive-slide');
-          }
-        });
-        
-        // Update dots
-        dots.forEach((d, i) => d.classList.toggle('active', i === carouselIdx));
+        return card;
       }
 
-      document.getElementById('fwPrev')?.addEventListener('click', () => goSlide(carouselIdx - 1));
-      document.getElementById('fwNext')?.addEventListener('click', () => goSlide(carouselIdx + 1));
-      document.getElementById('ctrlPrev')?.addEventListener('click', () => goSlide(carouselIdx - 1));
-      document.getElementById('ctrlNext')?.addEventListener('click', () => goSlide(carouselIdx + 1));
-      window.addEventListener('resize', updateCarousel);
+      function shiftWorkCarousel(direction) {
+        if (carouselItems.length < 2) return;
+        carouselIdx = (carouselIdx + direction + carouselItems.length) % carouselItems.length;
+        renderWorkCarousel();
+      }
+
+      // Carousel navigation listeners
+      document.getElementById('workPrev')?.addEventListener('click', () => shiftWorkCarousel(-1));
+      document.getElementById('workNext')?.addEventListener('click', () => shiftWorkCarousel(1));
 
       /* ── Modal ── */
       function openModal(v) {

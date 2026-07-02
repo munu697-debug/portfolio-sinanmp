@@ -1,0 +1,5 @@
+.config/
+.local/
+.agents/
+node_modules/
+.gemini/

@@ -627,7 +627,7 @@
           <div class="card-media">
             <div class="card-media-thumb">${thumbHtml}</div>
             <div class="card-iframe-wrap">
-              <iframe src="${embedSrc}" title="${title}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="" data-src="${embedSrc}" title="${title}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
             </div>
             ${isActive ? `
               <button class="play-overlay" type="button" aria-label="Play ${title}">
@@ -652,10 +652,13 @@
               e.stopPropagation();
               const isPlaying = card.classList.contains('is-playing');
               const iframe = card.querySelector('iframe');
-              if (!iframe || !embedSrc) return;
+              const iframeSrc = iframe?.dataset.src || '';
+              if (!iframe || !iframeSrc) return;
               
               if (!isPlaying) {
-                iframe.src = embedSrc;
+                iframe.src = iframeSrc;
+              } else {
+                iframe.src = '';
               }
               card.classList.toggle('is-playing', !isPlaying);
               
